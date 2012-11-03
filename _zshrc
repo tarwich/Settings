@@ -1,0 +1,6 @@
+
+export ZSH_THEME="muse"
+zstyle '*' single-ignored complete
+plugins=(brew dircycle gem git osx)
+COMPLETION_WAITING_DOTS="true"
+
