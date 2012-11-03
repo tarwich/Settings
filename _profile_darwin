@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Find plist buddy
+PLISTBUDDY_NAME=$(whatis plistbuddy | grep -Eo "[[:alpha:]]+" | head -n 1)
+PLISTBUDDY=$(which $PLISTBUDDY_NAME) || PLISTBUDDY=$(find / -maxdepth 3 -name $PLISTBUDDY_NAME 2>/dev/null)
+
+# Find the Terminal plist
+TERMINAL_PLIST=$(find {~/Library,/Library}/Preferences/com.apple.Terminal.plist 2>/dev/null | head -1)
+
+# Get default window
+DEFAULT_PROFILE=$(defaults read -app Terminal "Default Window Settings")
+# Get startup window
+STARTUP_PROFILE=$(defaults read -app Terminal "Startup Window Settings")
+
+# Get unique profiles
+echo "$DEFAULT_PROFILE
+$STARTUP_PROFILE
+Visor" | sort -u | while read PROFILE ; do
+	# Set preferences in all the chosen profiles 
+	$PLISTBUDDY -c "Add ':Window Settings:$PROFILE:useOptionAsMetaKey' bool" "$TERMINAL_PLIST" 2>/dev/null
+	$PLISTBUDDY -c "Set ':Window Settings:$PROFILE:useOptionAsMetaKey' 1" "$TERMINAL_PLIST"
+done
+
+# Setup bash-completion
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+	. $(brew --prefix)/etc/bash_completion
+fi
+

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+alias ls='ls -G'
+alias grep='grep --color'
+
+open -a TotalTerminal
+#if [[ -n "$(which pidof 2>/dev/null)" ]] ; then
+#	[[ -n "$(pidof TotalTerminal)" ]] || open -a TotalTerminal
+#else
+#	open -a TotalTerminal
+#fi
+
+PREFIX=$(dirname $BASH_SOURCE)
+OS=$(sysctl -b kern.ostype | tr A-Z a-z)
+OS_PROFILE=$PREFIX/_profile_$OS
+
+[[ -f $OS_PROFILE ]] && source $OS_PROFILE
+
