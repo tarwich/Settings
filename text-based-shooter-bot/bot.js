@@ -18,8 +18,14 @@
 	ns.idleIn = 99999;
 	// Setup the idle seed (seconds)
 	ns.IDLE_SEED = 5;
+	// What should a bored bot do? LOOK / MOVE
+	ns.idleAction = "MOVE";
+	// Tell the user what you're doing
+	ns.verbose = true;
 	
-	// Initialize (like new())
+	/**
+	 * Initialize (like new())
+	 */
 	ns.initialize = function() {
 		// Reset the idle time
 		ns.resetIdle();
@@ -32,7 +38,7 @@
 		// Add new ajaxSuccess listener
 		$("body").bind("ajaxSuccess", ns.ajaxSuccess);
 	};
-	
+
 	/**
 	 * Fires in current direction, checking ammo before and after
 	 */
@@ -59,6 +65,10 @@
 	 * Join the first room available 
 	 */
 	ns.joinFirst = function() {
+		// Tell the user
+		if(verbose) ns.message("Trying to join the first non-full room");
+
+		// Go through the rooms
 		for(var i=0; i<game.rooms.length; ++i) {
 			var room = game.rooms[i];
 
@@ -76,6 +86,8 @@
 	 * Look around
 	 */
 	ns.look = function() {
+		// Tell the user 
+		if(ns.verbose) ns.message("Looking around nervously");
 		// Look around
 		game.performLook();
 		// Reset the idle timer
@@ -83,15 +95,33 @@
 	}
 
 	/**
+	 * Show a message to the user
+	 */
+	ns.message = function(text) {
+		// Output the text to the game's native display object
+		if(text != undefined) display.print(["BOT: ", text, "<br />"].join(""));
+	};
+
+	/**
 	 * Move in a direction, or randomly if none provided
 	 */
 	ns.move = function(direction) {
-		if(direction == undefined)
+		// No direction defaults to random
+		if(direction == undefined) {
+			var i, directions = "news".split("");
+
 			// Find a direction to move
-			for( direction in {n:0, s:0, e:0, w:0} )
+			while(directions.length > 0) {
+				// Get the index of a random item out of the array
+				i = Math.floor(Math.random() * directions.length);
+				// Remove that direction from the array
+				direction = directions.splice(i, 1)[0];
 				// If we can move, then go
 				if(player.canGoInDirection(direction)) return ns.move(direction);
-		else {
+			}
+		} else {
+			// Tell the user 
+			if(ns.verbose) ns.message("Going " + game.getFullDirection(direction));
 			// Go where we were asked
 			player.go(direction);
 			// Reset the idle timer
@@ -99,12 +129,18 @@
 		}
 	};
 	
-	// Reload function (because they don't really have one)
+	/** 
+	 * Reload function (because they don't really have one)
+	 */
 	ns.reload = function() {
+		// Tell the user
+		ns.message("Reloading");
+		// Shanked stright from the game code ---{
 		var prevammo = player.ammo;
 		player.ammo = player.defaultAmmo;
 		player.totalAmmo -= (player.ammo - prevammo);
 		game.updateHUD();
+		// }---
 		// Reset the idle timer
 		ns.resetIdle();
 	};
@@ -119,7 +155,9 @@
 		ns.idleIn = 1000 + (Math.random() * ns.IDLE_SEED * 1000);
 	};
 		
-	// The player status hook
+	/**
+	 * The player status hook
+	 */
 	ns.statusHook = function() {
 		// Pre status
 		
@@ -136,7 +174,9 @@
 		
 	};
 
-	// Prune old lines from console
+	/**
+	 * Prune old lines from console
+	 */
 	ns.tick = function() {
 		// Do not write commands in here. This is ONLY for the purpose of 
 		// reading the text in $content
@@ -149,7 +189,9 @@
 		}
 	};
 
-	// Create a trap to intercept player status
+	/**
+	 * Create a trap to intercept player status
+	 */
 	ns.trapStatus = function() {
 		if(ns.oldStatusFunction == undefined) {
 			// Memorize the status function
@@ -159,10 +201,14 @@
 		}
 	};
 	
-	// Handled every time the server sends us a message
+	/**
+	 * Handled every time the server sends us a message
+	 */
 	ns.ajaxSuccess = function(a, b, c, text) {
 		var json = null;
 		
+		// Don't act in the lobby
+		if(game.inRoom < 1) return;
 		try { json = jQuery.parseJSON(text); } catch(e) {}
 		// Don't handle null json
 		if(json == null) return;
@@ -213,7 +259,9 @@
 			// If we're idle
 			else if( (new Date().getTime() - ns.lastActionTime) >= ns.idleIn) {
 				// Look around nervously
-				ns.look();
+				if(ns.idleAction == "LOOK") ns.look();
+				// Move around nervously
+				else if(ns.idleAction == "MOVE") ns.move();
 			}
 		}
 
