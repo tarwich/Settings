@@ -12,9 +12,17 @@
 	if(ns.interval) window.clearInterval(ns.interval);
 	// Remove old ajaxSuccess listener (if present)
 	$("body").unbind("ajaxSuccess", window.bot.ajaxSuccess);
+	// Reset the last action time
+	ns.lastActionTime = new Date().getTime();
+	// Setup an idle seed
+	ns.idleIn = 99999;
+	// Setup the idle seed (seconds)
+	ns.IDLE_SEED = 5;
 	
 	// Initialize (like new())
 	ns.initialize = function() {
+		// Reset the idle time
+		ns.resetIdle();
 		// Find the content div
 		$content = ns.$content = $("#content");
 		// Hook into the old player status
@@ -43,6 +51,8 @@
 		player.fireInCurrentDirection();
 		// If we're out of ammo, then reload
 		if(player.ammo <= 0) ns.reload();
+		// Reset the idle timer
+		ns.resetIdle();
 	};
 	
 	/**
@@ -61,6 +71,33 @@
 			}
 		}
 	};
+
+	/**
+	 * Look around
+	 */
+	ns.look = function() {
+		// Look around
+		game.performLook();
+		// Reset the idle timer
+		ns.resetIdle();
+	}
+
+	/**
+	 * Move in a direction, or randomly if none provided
+	 */
+	ns.move = function(direction) {
+		if(direction == undefined)
+			// Find a direction to move
+			for( direction in {n:0, s:0, e:0, w:0} )
+				// If we can move, then go
+				if(player.canGoInDirection(direction)) return ns.move(direction);
+		else {
+			// Go where we were asked
+			player.go(direction);
+			// Reset the idle timer
+			ns.resetIdle();
+		}
+	};
 	
 	// Reload function (because they don't really have one)
 	ns.reload = function() {
@@ -68,6 +105,18 @@
 		player.ammo = player.defaultAmmo;
 		player.totalAmmo -= (player.ammo - prevammo);
 		game.updateHUD();
+		// Reset the idle timer
+		ns.resetIdle();
+	};
+
+	/**
+	 * Update the idle time
+	 */
+	ns.resetIdle = function() {
+		// Set the lastActionTime to right now
+		ns.lastActionTime = new Date().getTime();
+		// Set a new idle time
+		ns.idleIn = 1000 + (Math.random() * ns.IDLE_SEED * 1000);
 	};
 		
 	// The player status hook
@@ -131,7 +180,7 @@
 			// We killed someone
 			else if(json.response == "KILL") {
 				// Look around
-				game.performLook();
+				ns.look();
 			}
 			
 			// Last attacker (if last+direction) (if hurtMe)
@@ -148,12 +197,23 @@
 				// If the distance is zero, then we're on top of them
 				if(json.distance == 0) {
 					// Move off of the other player
-					for( direction in {n:0, s:0, e:0, w:0} )
-					if(player.canGoInDirection(direction)) return player.go(direction);
+					ns.move();
 				} else {
 					// Shoot the guy
 					ns.fire(other.dir);
 				}
+			}
+
+			// We moved. Look around
+			else if( (json.directions) ) {
+				// Get a clean look at things
+				ns.look();
+			}
+
+			// If we're idle
+			else if( (new Date().getTime() - ns.lastActionTime) >= ns.idleIn) {
+				// Look around nervously
+				ns.look();
 			}
 		}
 
