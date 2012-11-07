@@ -28,7 +28,15 @@
 	/**
 	 * Fires in current direction, checking ammo before and after
 	 */
-	ns.fire = function() {
+	ns.fire = function(direction) {
+		// If we're supposed to fire in a certain direction
+		if(direction != undefined) {
+			// If we're not facing the direction
+			if(player.direction != direction) 
+				// Then turn
+				player.turnToDirection(direction, true);
+		}
+
 		// If we're out of ammo, then reload
 		if(player.ammo <= 0) ns.reload();
 		// And fire!
@@ -115,33 +123,36 @@
 		// If we're alive
 		if(!player.dead) {
 			// Hit someone, but didn't kill 'em
-			if( (json.result == "HIT_PLAYER") && (json.response != "KILL") ) {
+			if( (json.response == "HIT") ) {
 				// Shoot the guy again
 				ns.fire();
+			}
+
+			// We killed someone
+			else if(json.response == "KILL") {
+				// Look around
+				game.performLook();
 			}
 			
 			// Last attacker (if last+direction) (if hurtMe)
 			else if( (json.l) && (json.l.d) && (parseInt(json.h, 0) != ns.health) ) {
-				console.log("SHOOTING");
-				// Face the enemy
-				player.turnToDirection(json.l.d, true);
-				// Fire
-				ns.fire();
+				// Fire (in the direction of the other)
+				ns.fire(json.l.d);
 			}
 
 			// Seen (you see people)
 			else if( (json.seen) && (json.seen[0]) ) {
+				// The player we 'see'
 				other = json.seen[0];
 				
 				// If the distance is zero, then we're on top of them
 				if(json.distance == 0) {
+					// Move off of the other player
 					for( direction in {n:0, s:0, e:0, w:0} )
 					if(player.canGoInDirection(direction)) return player.go(direction);
 				} else {
-					// Face the guy
-					player.turnToDirection(other.dir, true);
 					// Shoot the guy
-					ns.fire();
+					ns.fire(other.dir);
 				}
 			}
 		}
@@ -152,27 +163,4 @@
 	
 	ns.initialize();
 })("bot", jQuery);
-
-// player
-// .ammo: 8
-// .availableDirections: Array[3]
-// .canGoInDirection: function (dir)
-// .canTurnInDirection: function (dir)
-// .dead: false
-// .deaths: 0
-// .defaultAmmo: 8
-// .direction: "e"
-// .fireInCurrentDirection: function ()
-// .frags: 0
-// .getStatus: function ()
-// .go: function (dir)
-// .health: 100
-// .respawn: function ()
-// .setPositionFromJSON: function (posJSON)
-// .team: 0
-// .totalAmmo: -85
-// .turnToDirection: function (dir, force)
-// .x: 5
-// .y: 7
-
 
