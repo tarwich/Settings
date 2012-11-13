@@ -196,6 +196,9 @@ nnoremap <C-l> :let @/ = ""<CR>
 inoremap <C-l> <C-o>:let @/ = ""<CR>
 vnoremap <C-l> :let @/ = ""<CR>
 
+" Map D-J to join
+vnoremap <D-j> :join<CR>
+
 " \__________________________________________________/ }}}
 
 "  __________________________________________________ 

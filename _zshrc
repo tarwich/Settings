@@ -1,3 +1,4 @@
+#!/bin/zsh
 
 export ZSH_THEME="muse"
 zstyle '*' single-ignored complete
@@ -5,5 +6,8 @@ plugins=(brew dircycle gem git osx)
 COMPLETION_WAITING_DOTS="true"
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
+
+# If TotalTerminal exists, then run it
+open -a TotalTerminal
 
 # vim: set ft=zsh :
