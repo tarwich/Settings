@@ -35,6 +35,7 @@ class Document
 	def print stream=STDOUT, depth=0
 		stream.puts "digraph G {"
 		stream.puts "	overlap=false;"
+		stream.puts "	rankdir=LR;"
 		stream.puts "	"
 		stream.puts %{"My Computer" [shape=box,style=filled,color="#dddddd"];}
 
@@ -106,6 +107,6 @@ stream = File.open(DOT_FILE, "w")
 Document.new.print stream
 stream.close
 
-`twopi -Tpng -o "#{IMAGE_FILE}" "#{DOT_FILE}"`
+`dot -Tpng -o "#{IMAGE_FILE}" "#{DOT_FILE}"`
 `open "#{IMAGE_FILE}"`
 
