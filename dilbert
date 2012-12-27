@@ -1,0 +1,158 @@
+#!/usr/bin/expect
+
+set IMAGE_PATH "~/Downloads/dilberts/"
+set BACKGROUND_PATH "~/Downloads/dilbert.png"
+
+##################################################
+# 
+# Main
+# 
+# Main program entry point
+# (Please keep this on top. Other procs should be
+# sorted alphabetically)
+# 
+##################################################
+proc main {} {
+	global MONTAGE
+	global CURL
+
+	# Find image magick
+	set MONTAGE [require "montage" "Image Magick"]
+	# Find curl
+	set CURL [require "curl"]
+	
+	# Download the latest comics
+	downloadComics 9
+	# Merge the comics
+	mergeComics 9
+	# Update the desktop background
+	updateDesktopBackground
+}
+
+##################################################
+# 
+# DownloadComics
+# 
+# Download the N latest comics
+# 
+# @param count The number of comics to download
+# 
+##################################################
+proc downloadComics {count} {
+	global CURL
+	global IMAGE_PATH
+	
+	# Make sure the image path exists
+	file mkdir [file nativename $IMAGE_PATH]
+	# Get the current time
+	set seconds [clock seconds]
+
+	# Download comics for each day
+	for {set i 0} {$i < $count} {incr i 1} {
+		# Make a datestamp for this day
+		set dateStamp [clock format [clock add $seconds -$i day] -format "%Y-%m-%d"]
+		# Calculate the image path on the file system
+		set imagePath [string trimright [file nativename $IMAGE_PATH] /]/$dateStamp.gif
+		
+		# If the file doesn't exist, then download it
+		if {![file exists $imagePath]} {
+			puts "Downloading comic for $dateStamp"
+			
+			# Get the page for the image
+			set html [exec $CURL -s "http://dilbert.com/strips/comic/$dateStamp/"]
+			# Find the image url
+			regexp -- {http://dilbert.com/dyn/str_strip[^"]*} $html imageURL #" <-- This is to close the quote for vim's sake
+			# Download the image
+			exec $CURL -so "$imagePath" "$imageURL"
+			# Let the server rest
+			puts "Letting the server breathe"
+			sleep 2
+		}
+	}
+}
+
+##################################################
+# 
+# Fail
+# 
+# Print an error message to STDERR and exit
+# 
+##################################################
+proc fail {message} {
+	puts stderr "$message\n"
+	exit 1;
+}
+
+##################################################
+# 
+# MergeComics
+# 
+# Merge the latest $count comics
+# 
+# @param count the number of comics to merge
+# 
+##################################################
+proc mergeComics {count} {
+	global IMAGE_PATH
+	global BACKGROUND_PATH
+	global MONTAGE
+
+	# Get the comics from IMAGE_PATH
+	set files [glob -dir [file nativename $IMAGE_PATH] *]
+	# Get the last $count files
+	set files [lrange $files end-$count end]
+	
+	# ImageMagick the files!
+	puts "Merging images"
+	exec $MONTAGE {*}$files -geometry +10+10 -shadow -background none [file nativename $BACKGROUND_PATH]
+}
+
+##################################################
+# 
+# Require
+# 
+# Check to see if a program exists. If it 
+# doesn't, then throw an error
+# 
+##################################################
+proc require {command {name ""}} {
+	# If the name isn't specified, then set it to the command
+	if {$name == ""} { set name $command }
+
+	# Find the command
+	if { [catch {set path [exec which $command]} ] } {
+		fail "Cannot find $name"
+	}
+	
+	return $path
+}
+
+##################################################
+# 
+# Update Desktop Background
+# 
+# Set the desktop background to the background 
+# image and refresh it
+# 
+##################################################
+proc updateDesktopBackground {} {
+	global BACKGROUND_PATH
+
+	# Get the native path to the image
+	set backgroundPath [file nativename $BACKGROUND_PATH]
+	puts "Updating desktop"
+
+	# Tell AppleScript tp update the background
+	exec osascript -e [subst {
+		tell application "Finder" 
+			set thePath to "$backgroundPath" as POSIX file
+			--set desktop picture to the first item of folder {"Macintosh HD:Library:Desktop Pictures:Solid Colors"} as alias
+			set desktop picture to thePath as alias
+			tell application "Dock" to quit	
+		end tell
+	}]
+}
+
+main
+
+# vim: set ft=expect :
