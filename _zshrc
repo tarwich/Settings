@@ -3,6 +3,8 @@
 # Set my theme. Muse is one I like because they have icons, git support, and 
 # muse seems to work without additional configuration / support.
 export ZSH_THEME="muse"
+# I like to use the vim editor
+export EDITOR=vim
 # Tell zsh to auto-select the first completion when there is only one
 zstyle '*' single-ignored complete
 # Load these plugins when zsh starts (it will start AFTER this config  is processed

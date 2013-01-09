@@ -108,6 +108,9 @@ Bundle 'Solarized'
 " Set color scheme to Solarized
 :set background=dark
 :colorscheme solarized
+" Load php bundle
+Bundle 'php'
+Bundle 'php.vim'
 
 " \__________________________________________________/ }}}
 

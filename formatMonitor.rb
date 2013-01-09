@@ -31,7 +31,7 @@ class Application
 			
 			# Every 15, get a new file listing
 			if(i == 0) then 
-				files = `find . -maxdepth 5 #{filters}`.split("\n")
+				files = `find . -maxdepth 20 #{filters}`.split("\n")
 				files.each { |path| touchFile(path) }
 			end
 			
