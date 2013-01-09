@@ -12,21 +12,28 @@ set BACKGROUND_PATH "~/Downloads/dilbert.png"
 # sorted alphabetically)
 # 
 ##################################################
-proc main {} {
+proc main {args} {
 	global MONTAGE
 	global CURL
 
+	# Process --merge argument
+	if {[lsearch $args --merge] > -1} { set MERGE true } else { set MERGE false }
+	
 	# Find image magick
 	set MONTAGE [require "montage" "Image Magick"]
 	# Find curl
 	set CURL [require "curl"]
 	
-	# Download the latest comics
-	downloadComics 9
-	# Merge the comics
-	mergeComics 9
-	# Update the desktop background
-	updateDesktopBackground
+	# Download the latest comics, and if some downloaded merge is always true
+	if {[downloadComics 9] > 0} { set MERGE true }
+
+	# If we need to merge comics
+	if {$MERGE == true} {
+		# Merge the comics
+		mergeComics 9
+		# Update the desktop background
+		updateDesktopBackground
+	}
 }
 
 ##################################################
@@ -46,6 +53,8 @@ proc downloadComics {count} {
 	file mkdir [file nativename $IMAGE_PATH]
 	# Get the current time
 	set seconds [clock seconds]
+	# The number of downloaded items
+	set n 0
 
 	# Download comics for each day
 	for {set i 0} {$i < $count} {incr i 1} {
@@ -56,6 +65,13 @@ proc downloadComics {count} {
 		
 		# If the file doesn't exist, then download it
 		if {![file exists $imagePath]} {
+		# If this isn't the first item, then let the server breathe
+			if {$n > 0} {
+				# Let the server rest
+				puts "Letting the server breathe"
+				sleep 2
+			}
+			
 			puts "Downloading comic for $dateStamp"
 			
 			# Get the page for the image
@@ -64,11 +80,13 @@ proc downloadComics {count} {
 			regexp -- {http://dilbert.com/dyn/str_strip[^"]*} $html imageURL #" <-- This is to close the quote for vim's sake
 			# Download the image
 			exec $CURL -so "$imagePath" "$imageURL"
-			# Let the server rest
-			puts "Letting the server breathe"
-			sleep 2
+			# Increment n
+			incr n 1
 		}
 	}
+
+	# Return the number we actually downloaded
+	return $n
 }
 
 ##################################################
@@ -100,7 +118,7 @@ proc mergeComics {count} {
 	# Get the comics from IMAGE_PATH
 	set files [glob -dir [file nativename $IMAGE_PATH] *]
 	# Get the last $count files
-	set files [lrange $files end-$count end]
+	set files [lrange $files end-[expr $count - 1] end]
 	
 	# ImageMagick the files!
 	puts "Merging images"
@@ -118,7 +136,7 @@ proc mergeComics {count} {
 proc require {command {name ""}} {
 	# If the name isn't specified, then set it to the command
 	if {$name == ""} { set name $command }
-
+	
 	# Find the command
 	if { [catch {set path [exec which $command]} ] } {
 		fail "Cannot find $name"
@@ -153,6 +171,6 @@ proc updateDesktopBackground {} {
 	}]
 }
 
-main
+main {*}$argv
 
 # vim: set ft=expect :
