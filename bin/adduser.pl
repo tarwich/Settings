@@ -35,6 +35,9 @@ sub main {
 	my @groups = ();
 	my $home = 1;
 	my $fullName = "";
+
+	# Make sure the user is root
+	unless(getpwuid($>) eq 'root') { fail("Must run as root"); }
 	
 	while(1) {
 		my @items = (
