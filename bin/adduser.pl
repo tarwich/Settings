@@ -97,16 +97,18 @@ sub createUser {
 	# Decide whether or not to create the home directory
 	my $createHome = $options->{createHome} ? "--create-home" : "";
 	# Join groups with a comma for usermod
-	my $groups = "--groups " . join(",", @{$options->{groups}});
+	my $groups = @{$options->{groups}} ? "--groups " . join(",", @{$options->{groups}}) : "";
 	# Get the username from the options
 	my $username = $options->{username};
 	# Make comment if fullName provided
 	my $comment = $options->{fullName} ? "--comment \"$options->{fullName}\"" : "";
-	
+
+	# Make sure a username was provided
+	unless($username) { fail("Must provide username"); }
 	# Add the user
-	`useradd $createHome $groups $comment`;
+	system("useradd $username $createHome $groups $comment") or fail("Unable to create user");
 	# Set the password for the user
-	`passwd $username`;
+	system("passwd $username") or fail("Unable to set password");
 	quit("User $username added.");
 }
 
