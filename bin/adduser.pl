@@ -13,8 +13,6 @@
 =cut
 package Symfono::AddUser;
 
-use Term::ReadKey;
-
 # Turn on strict error checking
 use strict;
 
@@ -202,8 +200,6 @@ Args     :
 
 =cut
 sub prompt {
-	use Term::ReadKey;
-	
 	# Get parametters
 	my $message = @_ ? shift : ""; # Message to display to the user
 	my $length  = @_ ? shift : 0 ; # Length of input
@@ -215,14 +211,10 @@ sub prompt {
 
 	# If we're only supposed to get one character:
 	if($length == 1) {
-		# Set the read mode to raw to get only one character
-		ReadMode "raw";
 		# Get the character from the user
 		$value = ReadKey(0);
-		# Set the read mode back to what it was before
-		ReadMode "restore";
 		# Echo input and clear the line
-		if($message) { print("$value\n"); }
+		if($message) { print("\n"); }
 	}
 
 	# More than one character
@@ -235,6 +227,28 @@ sub prompt {
 
 	# Return the value
 	return $value;
+}
+
+sub ReadKey {
+	my $BSD_STYLE = 0;
+	
+    if ($BSD_STYLE) {
+        system "stty cbreak </dev/tty >/dev/tty 2>&1";
+    }
+    else {
+        system "stty", '-icanon', 'eol', "\001";
+    }
+
+    my $key = getc(STDIN);
+
+    if ($BSD_STYLE) {
+        system "stty -cbreak </dev/tty >/dev/tty 2>&1";
+    }
+    else {
+        system 'stty', 'icanon', 'eol', '^@'; # ASCII NUL
+    }
+
+	return $key;
 }
 
 =head2 quit
