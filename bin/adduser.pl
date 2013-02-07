@@ -109,9 +109,9 @@ sub createUser {
 	# Make sure a username was provided
 	unless($username) { fail("Must provide username"); }
 	# Add the user
-	system("useradd $username $createHome $groups $comment") or fail("Unable to create user");
+	system("useradd $username $createHome $groups $comment") == 0 or fail("Unable to create user");
 	# Set the password for the user
-	system("passwd $username") or fail("Unable to set password");
+	system("passwd $username") == 0 or fail("Unable to set password");
 	quit("User $username added.");
 }
 
@@ -155,7 +155,7 @@ Args     :
 
 =cut
 sub fail {
-	print STDERR "ERROR: " . shift(@_);
+	print STDERR "ERROR: " . shift(@_) . "\n";
 	exit(1);
 }
 
