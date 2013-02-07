@@ -33,25 +33,35 @@ Args     : (none)
 =cut
 sub main {
     use 5.010;
-	my $username = $ARGV[0];
-	my $groups = "";
+	my $username = $ARGV[0] ? $ARGV[0] : "";
+	my @groups = ();
 	my $home = 1;
+	my $fullName = "";
 	
 	while(1) {
-		my %items = (
-				"n" => "Set user name : $username"            , 
-				"g" => "Set groups    : $groups"              , 
-				"h" => "Create home   : ". ($home?"YES":"NO") , 
-				"c" => "Create the user"                      , 
-				"q" => "Quit"                                 , 
+		my @items = (
+				{"n" => "Set user name : $username"            }, 
+				{"g" => "Set groups    : ". join(",", @groups) }, 
+				{"h" => "Create home   : ". ($home?"YES":"NO") }, 
+				{"f" => "Set full name : $fullName"            }, 
+				{"c" => "Create the user"                      }, 
+				{"q" => "Quit"                                 }, 
 			);
+
 		# Show the menu
-		my $item = menu(\%items);
+		my $item = menu(@items);
 
 		given ( $item ) {
-			when("n") { $username = prompt("Enter the new user name: "); }
-			when("g") { $groups = getGroups(); }
-			when("c") { createUser(); }
+			when("n") { $username = prompt("Enter the new user name: "); } # Get a new user name
+			when("g") { @groups = getGroups(); }                           # Get the groups to create
+			when("h") { $home = !$home; }                                  # Invert the create home directories option
+			when("f") { $fullName = prompt("Full name: "); }               # Get full name of user
+			when("c") { createUser({                                       # Actually make the user
+						"username"   => $username , 
+						"groups"     => \@groups  , 
+						"createHome" => $home     ,
+						"fullName"   => $fullName ,
+					}); }                                    
 			when("q") { quit(); }
 			default { fail("Unknown item: $item. Quitting"); }
 		}
@@ -72,13 +82,34 @@ Usage    : createUser();
 Function : This is the method that actually makes the user, adds the groups,
          : sets the key data, etc.
 Returns  : void
-Args     : none
+Args     : 
+         : 1 = A dictionary of user options {
+         :	name       => The user name to create
+         :	fullName   => The full name of the user
+         :	createHome => True if a home directory should be created for the user
+         :	password   => The new password for the user
+         :	@groups    => Array of groups to add the user to
+         : }
 
 =cut
 sub createUser {
-	print "useradd --create-home ";
-	print "\n";
-	quit();
+	# Get the options from the first argument
+	my $options = shift;
+
+	# Decide whether or not to create the home directory
+	my $createHome = $options->{createHome} ? "--create-home" : "";
+	# Join groups with a comma for usermod
+	my $groups = "--groups " . join(",", @{$options->{groups}});
+	# Get the username from the options
+	my $username = $options->{username};
+	# Make comment if fullName provided
+	my $comment = $options->{fullName} ? "--comment \"$options->{fullName}\"" : "";
+	
+	# Add the user
+	`useradd $createHome $groups $comment`;
+	# Set the password for the user
+	`passwd $username`;
+	quit("User $username added.");
 }
 
 =head2 menu
@@ -94,16 +125,15 @@ Args     :
 =cut
 sub menu {
 	# Get the list of menu items
-	my $items = shift;
-	my %items = %$items;
+	my @items = @_;
 
 	# Check input
-#	unless($items) { fail("menu called with no items"); }
+	unless(@items) { fail("menu called with no items"); }
 	
 	# Print menu
-	while( my($i, $caption) = each(%items) ) {
+	foreach my $item (@items) {
 		# Break up the item into its key and caption
-#		my ($i, $caption) = each(%item);
+		my ($i, $caption) = each(%$item);
 		print "$i) $caption\n";
 	}
 
@@ -131,7 +161,7 @@ sub fail {
 Title    : getGroups
 Usage    : my $groups = getGroups();
 Function : Prompts the user for a list of groups, then returns it. If the user doesn't provide any groups, then the groups of the currently logged-in user will be used.
-Returns  : A string of the groups to add the user to after it is created
+Returns  : An array of the groups to add the user to after it is created
 Args     : none
 
 =cut
@@ -139,20 +169,24 @@ sub getGroups {
 	print ""
 		. "Enter the groups for the new user. "
 		. "You may separate groups by any combination of whitespace and commas. "
-		. "If you enter a blank line, then the groups of the current user will be used. "
+		. "If you enter a blank line, then the groups will be cleared. "
+		. "If you enter a ?, then the groups of the current user will be used. "
 		. "\n";
 	# Get the groups from the user
 	my $groups = prompt("Groups: ");
 
 	# If no groups were provided, then 
-	unless($groups) {
+	if($groups eq "?") {
 		# Set groups to the groups of the currently logged in user
 		$groups = `groups`;
 		# Cleanup the groups
 		chomp $groups;
 	}
+
+	# Break up groups on commas and whitespace
+	my @groups = split(/[,\s]+/, $groups);
 	
-	return $groups;
+	return @groups;
 }
 
 =head2 prompt
