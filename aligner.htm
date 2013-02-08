@@ -1,0 +1,128 @@
+<html>
+	<head>
+		<style type='text/css'>
+			div.center-column {
+				margin-left : 10%;
+				width       : 80%;
+			}
+			
+			textarea.data {
+				width       : 100%;
+				height      : 40%;
+				font-family : monospace;
+			}
+
+			input.format {
+				width       : 100%;
+			}
+		</style>
+		<script type='text/javascript'>
+			(function() { 
+			var ns = {};
+			window.ns = ns;
+
+			// Check to see if the document is complete
+			ns.checkReady = function() {
+				// If the document is loaded
+				if(document.readyState == "complete") {
+					// Remove the readystate timer
+					window.clearInterval(ns.interval);
+					// Find format input element
+					ns.$format = document.querySelector("input.format");
+					// Listen to format input changes
+					ns.$format.addEventListener("change", ns.format);
+					// Find theInput
+					ns.$input = document.querySelector("#theInput");
+					// Find theOutput
+					ns.$output = document.querySelector("#theOutput");
+					// Start off with a format
+					ns.format();
+				}
+			};
+
+			// Format the block of text
+			ns.format = function() {
+				var format = ns.$format.value;
+				var components = format.split(/\s+/);
+				var lines = ns.$input.value.split("\n");
+				var job = {
+					lines: lines,
+					offsets: []
+				};
+
+				// The column that we'll be aligning to
+				var column = 0;
+
+				var regex = new RegExp(components.join("|"));
+
+				// Go through all the components
+				for(var i=0, iMax=components.length; i<iMax; ++i) {
+					var component = components[i];
+
+					// Go through all the lines and find our delimiter
+					for(var j=0, jMax=job.lines.length; j<jMax; ++j) {
+						var offset = 0, 
+							line = { text: job.lines[j], offsets: [], toString: function() {return this.text;} };
+
+
+						// Find all the instances of component in this line
+						do {
+							offset = line.text.indexOf(component, offset+1);
+
+							if(offset != -1) {
+								line.offsets.push(offset);
+							}
+						} while(offset != -1);
+
+						// Go through all the offsets in this line
+						for(var k=0, kMax=line.offsets.length; k<kMax; ++k) {
+							// If job.offsets is too small, then add this offset
+							if(job.offsets.length <= k) job.offsets.push(k);
+
+							else {
+								// Make job.offsets[k] the bigger of the two offsets
+								job.offsets[k] = Math.max(line.offsets[k], job.offsets[k]);
+							}
+						}
+						
+						// Put the line back in the array
+						job.lines[j] = line;
+					}
+
+					ns.$output.value = job.lines.join("\n");
+
+					console.dir(job);
+				}
+			}
+
+			// Add a ready state change listener
+			ns.interval = window.setInterval(ns.checkReady, 100);
+			})("aligner");
+		</script>
+	</head>
+	<body>
+		<div class='center-column'>
+			<table style='width: 100%'>
+				<tr>
+					<td>
+						Format: 
+					</td>
+					<td style='width: 100%'>
+						<input type='text' class='format' value=';' />
+					</td>
+				</tr>
+			</table>
+			<textarea class='data' id='theInput'>
+switch(something) {
+	case 1: doSomething(); break; // Do something
+	case 2: doSomethingElse(); break; // Do something else
+
+	default: 
+		fail("Not a chance"); // Didn't expect this
+		break;
+}
+			</textarea>
+			<textarea class='data' id='theOutput'></textarea>
+		</div>
+	</body>
+</html>
