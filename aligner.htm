@@ -29,10 +29,12 @@
 					window.clearInterval(ns.interval);
 					// Find format input element
 					ns.$format = document.querySelector("input.format");
-					// Listen to format input changes
-					ns.$format.addEventListener("change", ns.format);
+					// Listen to format changes
+					ns.$format.addEventListener("keyup", ns.format);
 					// Find theInput
 					ns.$input = document.querySelector("#theInput");
+					// Listen to input changes
+					ns.$input.addEventListener("keyup", ns.format);
 					// Find theOutput
 					ns.$output = document.querySelector("#theOutput");
 					// Start off with a format
@@ -44,55 +46,52 @@
 			ns.format = function() {
 				var format = ns.$format.value;
 				var components = format.split(/\s+/);
-				var lines = ns.$input.value.split("\n");
+				var lines = ns.$input.value.replace(/\t/g, "        ").split("\n");
 				var job = {
 					lines: lines,
 					offsets: []
 				};
 
 				// The column that we'll be aligning to
-				var column = 0;
+				var oldColumn = 0, column = 0;
 
-				var regex = new RegExp(components.join("|"));
+				var regex = new RegExp("(" + components.join("|") + ")");
 
-				// Go through all the components
-				for(var i=0, iMax=components.length; i<iMax; ++i) {
-					var component = components[i];
-
-					// Go through all the lines and find our delimiter
-					for(var j=0, jMax=job.lines.length; j<jMax; ++j) {
-						var offset = 0, 
-							line = { text: job.lines[j], offsets: [], toString: function() {return this.text;} };
-
-
-						// Find all the instances of component in this line
-						do {
-							offset = line.text.indexOf(component, offset+1);
-
-							if(offset != -1) {
-								line.offsets.push(offset);
-							}
-						} while(offset != -1);
-
-						// Go through all the offsets in this line
-						for(var k=0, kMax=line.offsets.length; k<kMax; ++k) {
-							// If job.offsets is too small, then add this offset
-							if(job.offsets.length <= k) job.offsets.push(k);
-
-							else {
-								// Make job.offsets[k] the bigger of the two offsets
-								job.offsets[k] = Math.max(line.offsets[k], job.offsets[k]);
-							}
-						}
+				while(true) {
+					console.log("____WHILE____");
+					// Go through all the lines
+					for(var i=0, iMax=lines.length; i<iMax; ++i) {
+						var line = lines[i];
+						var offset = line.substr(oldColumn).search(regex);
 						
-						// Put the line back in the array
-						job.lines[j] = line;
+						console.log(line.substr(oldColumn), offset);
+						if(offset > -1) {
+							// Move the column to this offset
+							column = Math.max(column, offset + oldColumn);
+						}
 					}
 
-					ns.$output.value = job.lines.join("\n");
+					for(var i=0, iMax=lines.length; i<iMax; ++i) {
+						var line = lines[i];
+						var offset = line.substr(oldColumn).search(regex);
+						
+						if(offset > -1) {
+							offset += oldColumn;
+							line = 
+								line.substr(0, offset)
+								+ new Array(column+1-offset).join("_")
+								+ line.substr(offset)
+								;
+							lines[i] = line;
+						}
+					}
 
-					console.dir(job);
+					if(column + 1 == oldColumn) break;
+					// Remember the previous column
+					oldColumn = column + 1;
 				}
+
+				ns.$output.value = lines.join("\n");
 			}
 
 			// Add a ready state change listener
@@ -108,7 +107,7 @@
 						Format: 
 					</td>
 					<td style='width: 100%'>
-						<input type='text' class='format' value=';' />
+						<input type='text' class='format' value='; :' />
 					</td>
 				</tr>
 			</table>
@@ -116,6 +115,7 @@
 switch(something) {
 	case 1: doSomething(); break; // Do something
 	case 2: doSomethingElse(); break; // Do something else
+	case 33: doSomethingElse(); break; // Do something else
 
 	default: 
 		fail("Not a chance"); // Didn't expect this
