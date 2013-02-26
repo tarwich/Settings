@@ -46,16 +46,17 @@
 			ns.format = function() {
 				var format = ns.$format.value;
 				var components = format.split(/\s+/);
-				var lines = ns.$input.value.replace(/\t/g, "        ").split("\n");
+				var lines = ns.$input.value.split("\n");
 				var job = {
 					lines: lines,
 					offsets: []
 				};
+				var condom = 0;
 
 				// The column that we'll be aligning to
 				var oldColumn = 0, column = 0;
 
-				var regex = new RegExp("(" + components.join("|") + ")");
+				var regex = new RegExp("\\s*(" + components.join("|") + ")");
 
 				while(true) {
 					console.log("____WHILE____");
@@ -79,8 +80,8 @@
 							offset += oldColumn;
 							line = 
 								line.substr(0, offset)
-								+ new Array(column+1-offset).join("_")
-								+ line.substr(offset)
+								+ new Array(column+1-offset).join(" ")
+								+ line.substr(offset).replace(/^\s*/, "")
 								;
 							lines[i] = line;
 						}
@@ -89,6 +90,7 @@
 					if(column + 1 == oldColumn) break;
 					// Remember the previous column
 					oldColumn = column + 1;
+					if(++condom > 100) break;
 				}
 
 				ns.$output.value = lines.join("\n");
@@ -107,21 +109,22 @@
 						Format: 
 					</td>
 					<td style='width: 100%'>
-						<input type='text' class='format' value='; :' />
+						<input type='text' class='format' value='\1; :' />
 					</td>
 				</tr>
 			</table>
 			<textarea class='data' id='theInput'>
 switch(something) {
 	case 1: doSomething(); break; // Do something
-	case 2: doSomethingElse(); break; // Do something else
+	case 2: doSomethingElse(); break ; // Do something else
 	case 33: doSomethingElse(); break; // Do something else
-
+			</textarea>
+<!--
 	default: 
 		fail("Not a chance"); // Didn't expect this
 		break;
 }
-			</textarea>
+-->
 			<textarea class='data' id='theOutput'></textarea>
 		</div>
 	</body>
