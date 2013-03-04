@@ -68,7 +68,7 @@
 
 			// Format the block of text
 			ns.format = function() {
-				var format = ns.$format.value;
+				var format = ns.$format.value.trim();
 				var components = format.split(/\s+/);
 				var lines = ns.$input.value.split("\n");
 				var job = {
