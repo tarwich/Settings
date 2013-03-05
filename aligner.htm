@@ -1,53 +1,53 @@
 <html>
 	<head>
 		<style type='text/css'>
-			table {
-				border-collapse: collapse    ;
-			}
+            table {
+                border-collapse: collapse    ;
+    		}
 
-			div.center-column {
-				margin-left    : 10%         ;
-				width          : 80%         ;
-			}
-			
-			textarea.data {
-				width          : 100%        ;
-				height         : 40%         ;
-				font-family    : monospace   ;
-			}
+            div.center-column {
+                margin-left    : 10%         ;
+                width          : 80%         ;
+    		}
+    		
+            textarea.data {
+                width          : 100%        ;
+                height         : 40%         ;
+                font-family    : monospace   ;
+    		}
 
-			input.format {
-				width          : 100%        ;
-			}
+            input.format {
+                width          : 100%        ;
+    		}
 
-			ul.options {
-				display        : block       ; 
-				text-align     : left        ; 
-				margin         : 0px         ;
-				padding        : 0px         ;
-			}
-			
-			ul.options li {
-				display        : inline-block;
-			}
+            ul.options {
+                display        : block       ; 
+                text-align     : left        ; 
+                margin         : 0px         ;
+                padding        : 0px         ;
+    		}
+    		
+            ul.options li {
+                display        : inline-block;
+    		}
 
-			input[name=tabwidth] { 
-				width          : 20          ; 
-				text-align     : center      ;
-			}
+            input[name=tabwidth] { 
+                width          : 20          ; 
+                text-align     : center      ;
+    		}
 
-			table.options td {
-				width          : 90px        ;
-				white-space    : nowrap      ;
-			}
+            table.options td {
+                width          : 90px        ;
+                white-space    : nowrap      ;
+    		}
 
-			.github {
-				text-align     : right       ;
-			}
+            .github {
+                text-align     : right       ;
+    		}
 
-			.github a {
-				padding-left: 10px;
-			}
+            .github a {
+                padding-left   : 10px        ;
+    		}
 		</style>
 		<script type='text/javascript'>
 			(function() { 
@@ -81,7 +81,9 @@
 					})(ns.$input, ns.$padLeft, ns.$sort, ns.$tabwidth);
 
 					// Find theOutput
-					ns.$output = document.querySelector("#theOutput");
+					(ns.$output = document.querySelector("#theOutput"))
+						// Listen to the theOutput clicks
+						.addEventListener("click", ns.selectResult);
 					// Start off with a format
 					ns.format();
 				}
@@ -172,7 +174,19 @@
 				if(sort) lines.sort();
 
 				ns.$output.value = lines.join("\n");
-			}
+			};
+
+			ns.selectResult = function(e) {
+				// Resolve event
+				e = e || window.event;
+				// Don't bubble this event
+				e.cancelPropogation = true;
+
+				// Select from the beginning
+				ns.$output.selectionStart = 0;
+				// Select to the end
+				ns.$output.selectionEnd = ns.$output.value.length
+			};
 
 			// Add a ready state change listener
 			ns.interval = window.setInterval(ns.checkReady, 100);
