@@ -17,12 +17,12 @@
 			}
 
 			ul.options {
-				display    : block ; 
-				text-align : left  ; 
-				margin: 0px;
-				padding: 0px;
+				display   : block; 
+				text-align: left ; 
+				margin    : 0px  ;
+				padding   : 0px  ;
 			}
-
+			
 			ul.options li {
 				display: inline-block;
 			}
@@ -70,7 +70,9 @@
 			ns.format = function() {
 				var format = ns.$format.value.trim();
 				var components = format.split(/\s+/);
-				var lines = ns.$input.value.split("\n");
+				var lines = ns.$input.value
+					.replace(/\s+$/, "") // rtrim
+					.split("\n");
 				var job = {
 					lines: lines,
 					offsets: []
@@ -85,13 +87,11 @@
 				var regex = new RegExp("\\s*(" + components.join("|") + ")");
 
 				while(true) {
-					console.log("____WHILE____");
 					// Go through all the lines
 					for(var i=0, iMax=lines.length; i<iMax; ++i) {
 						var line = lines[i];
 						var offset = line.substr(oldColumn).search(regex);
 						
-						console.log(line.substr(oldColumn), offset);
 						if(offset > -1) {
 							// Move the column to this offset
 							column = Math.max(column, offset + oldColumn);
