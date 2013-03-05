@@ -1,30 +1,52 @@
 <html>
 	<head>
 		<style type='text/css'>
+			table {
+				border-collapse: collapse    ;
+			}
+
 			div.center-column {
-				margin-left : 10%;
-				width       : 80%;
+				margin-left    : 10%         ;
+				width          : 80%         ;
 			}
 			
 			textarea.data {
-				width       : 100%;
-				height      : 40%;
-				font-family : monospace;
+				width          : 100%        ;
+				height         : 40%         ;
+				font-family    : monospace   ;
 			}
 
 			input.format {
-				width       : 100%;
+				width          : 100%        ;
 			}
 
 			ul.options {
-				display   : block; 
-				text-align: left ; 
-				margin    : 0px  ;
-				padding   : 0px  ;
+				display        : block       ; 
+				text-align     : left        ; 
+				margin         : 0px         ;
+				padding        : 0px         ;
 			}
 			
 			ul.options li {
-				display: inline-block;
+				display        : inline-block;
+			}
+
+			input[name=tabwidth] { 
+				width          : 20          ; 
+				text-align     : center      ;
+			}
+
+			table.options td {
+				width          : 90px        ;
+				white-space    : nowrap      ;
+			}
+
+			.github {
+				text-align     : right       ;
+			}
+
+			.github a {
+				padding-left: 10px;
 			}
 		</style>
 		<script type='text/javascript'>
@@ -45,19 +67,18 @@
 					ns.$format.addEventListener("keyup", ns.format);
 					// Find theInput
 					ns.$input = document.querySelector("#theInput");
-					// Find padLeft
-					ns.$padLeft = document.querySelector("input[name=padLeft]");
-					// Find sort
-					ns.$sort = document.querySelector("input[name=sort]");
-					var items;
-
+					// Get all the inputs we need
+					for(name in {padLeft:1, sort:1, tabwidth:1})
+						// Find input name='foo' and assign to ns.$foo
+						ns["$" + name] = document.querySelector("input[name="+name+"]");
+					
 					// Listen to input changes
 					(function() {
 						for(var i=0; i<arguments.length; ++i) {
 							arguments[i].addEventListener("keyup", ns.format);
 							arguments[i].addEventListener("click", ns.format);
 						}
-					})(ns.$input, ns.$padLeft, ns.$sort);
+					})(ns.$input, ns.$padLeft, ns.$sort, ns.$tabwidth);
 
 					// Find theOutput
 					ns.$output = document.querySelector("#theOutput");
@@ -70,21 +91,46 @@
 			ns.format = function() {
 				var format = ns.$format.value.trim();
 				var components = format.split(/\s+/);
-				var lines = ns.$input.value
+				var input = ns.$input.value;
+				var lines = input
 					.replace(/\s+$/, "") // rtrim
 					.split("\n");
-				var job = {
-					lines: lines,
-					offsets: []
-				};
 				var condom = 0;
-				var padLeft = ns.$padLeft.checked;
-				var sort = ns.$sort.checked;
-
+				var padLeft= ns.$padLeft.checked;
+				var sort   = ns.$sort.checked   ;
+				var tabwidth = parseInt(ns.$tabwidth.value) || 0;
 				// The column that we'll be aligning to
 				var oldColumn = 0, column = 0;
-
+				
 				var regex = new RegExp("\\s*(" + components.join("|") + ")");
+
+				// If there is a tabwidth in the first place, then untab lines
+				if(tabwidth > 0) 
+				// Go through each line
+				for(var i=0, iMax=lines.length; i<iMax; ++i) {
+					// Get the current line
+					var line = lines[i];
+					
+					// Go through each character in this line
+					for(var j=0, jMax=line.length; j<jMax; ++j) {
+						var c = line[j];
+
+						// If this character is a tab, then 
+						if(c == "\t") {
+							line = 
+								// Before the tab
+								line.substr(0, j) 
+								// Spaces to replace the tab
+								+ new Array(1 + (tabwidth - (j % tabwidth))).join(" ")
+								// After the tab
+								+ line.substr(j+1)
+								;
+						}
+					}
+					
+					// Put the candle back
+					lines[i] = line;
+				}
 
 				while(true) {
 					// Go through all the lines
@@ -145,16 +191,20 @@
 					</td>
 				</tr>
 			</table>
-			<ul class='options'>
-				<li>
+			<table class='options'><tr>
+				<td>
 					Pad Left: 
 					<input type='checkbox' name='padLeft' />
-				</li>
-				<li>
+				</td>
+				<td>
 					Sort: 
 					<input type='checkbox' name='sort' />
-				</li>
-			</ul>
+				</td>
+				<td>
+					Tabstop: 
+					<input type='text' name='tabwidth' value='4' />
+				</td>
+			</tr></table>
 			<textarea class='data' id='theInput'>
 switch(something) {
 	case 1: doSomething(); break; // Do something
@@ -168,6 +218,9 @@ switch(something) {
 }
 -->
 			<textarea class='data' id='theOutput'></textarea>
+			<div class='github link'>
+				<a class='download' href='https://raw.github.com/tarwich/Settings/master/aligner.htm'>download from github</a>
+			</div>
 		</div>
 	</body>
 </html>
