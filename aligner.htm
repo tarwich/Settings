@@ -173,6 +173,18 @@
 
 				if(sort) lines.sort();
 
+				// Retab lines if tabwidth is set
+				if(tabwidth > 0)
+				for(var i=0, iMax=lines.length; i<iMax; ++i) {
+					// Get leading whitespace
+					var leader = lines[i].match(/^ */)[0];
+					lines[i] = 
+						// Replace leading whitespace with tabs
+						leader.replace(new RegExp(" {"+tabwidth+"}", "g"), "\t")
+						// Get everything after the leader
+						+ lines[i].substr(leader.length) 
+				}
+
 				ns.$output.value = lines.join("\n");
 			};
 
