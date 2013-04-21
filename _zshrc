@@ -21,6 +21,9 @@ if expr "$OSTYPE" : darwin >/dev/null ; then
 fi
 
 # Run RVM init
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
+if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
+	. "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
+	PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+fi
 
 # vim: set ft=zsh :
