@@ -96,16 +96,13 @@
 				var format = ns.$format.value.trim();
 				var components = format.split(/\s+/);
 				var input = ns.$input.value;
-				var lines = input
-					.replace(/\s+$/, "") // rtrim
-					.split("\n");
+				var lines = input.split("\n");
 				var condom = 0;
 				var padLeft= ns.$padLeft.checked;
 				var sort   = ns.$sort.checked   ;
 				var tabwidth = parseInt(ns.$tabwidth.value) || 0;
 				// The column that we'll be aligning to
 				var oldColumn = 0, column = 0;
-				
 				var regex = new RegExp("\\s*(" + components.join("|") + ")");
 
 				// If there is a tabwidth in the first place, then untab lines
@@ -173,7 +170,13 @@
 					if(++condom > 100) break;
 				}
 
-				if(sort) lines.sort();
+				// If we're supposed to sort lines
+				if(sort) {
+					// Sort lines
+					lines.sort();
+					// If the first line is now whitespace, then put at end
+					if(/^\s+$/.test(lines[0])) lines.push(lines.shift());
+				}
 
 				// Retab lines if tabwidth is set
 				if(tabwidth > 0)
@@ -195,7 +198,6 @@
 				e = e || window.event;
 				// Don't bubble this event
 				e.cancelPropogation = true;
-
 				// Select from the beginning
 				ns.$output.selectionStart = 0;
 				// Select to the end
