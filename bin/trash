@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+/usr/bin/env osascript <<-END
+
+tell application "Finder" to move (POSIX file "$1") to trash
+
+END
+
+
+# vim: set ft=sh :
