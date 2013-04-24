@@ -175,7 +175,7 @@
 					// Sort lines
 					lines.sort();
 					// If the first line is now whitespace, then put at end
-					if(/^\s+$/.test(lines[0])) lines.push(lines.shift());
+					if(/^\s*$/.test(lines[0])) lines.push(lines.shift());
 				}
 
 				// Retab lines if tabwidth is set
