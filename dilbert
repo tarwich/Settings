@@ -26,14 +26,15 @@ proc main {args} {
 	
 	# Download the latest comics, and if some downloaded merge is always true
 	if {[downloadComics 9] > 0} { set MERGE true }
-
+	
 	# If we need to merge comics
 	if {$MERGE == true} {
 		# Merge the comics
 		mergeComics 9
-		# Update the desktop background
-		updateDesktopBackground
 	}
+
+	# Update the desktop background
+	updateDesktopBackground
 }
 
 ##################################################
@@ -122,7 +123,7 @@ proc mergeComics {count} {
 	
 	# ImageMagick the files!
 	puts "Merging images"
-	exec $MONTAGE {*}$files -geometry +10+10 -shadow -background none [file nativename $BACKGROUND_PATH]
+	exec -ignorestderr $MONTAGE {*}$files -geometry +10+10 -shadow -background none [file nativename $BACKGROUND_PATH]
 }
 
 ##################################################
