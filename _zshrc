@@ -8,7 +8,7 @@ export EDITOR=vim
 # Tell zsh to auto-select the first completion when there is only one
 zstyle '*' single-ignored complete
 # Load these plugins when zsh starts (it will start AFTER this config  is processed
-plugins=(brew dircycle gem git osx)
+plugins=(brew dircycle gem git)
 # Tell zsh to show red dots while searching for a completion
 COMPLETION_WAITING_DOTS="true"
 
@@ -20,6 +20,21 @@ if expr "$OSTYPE" : darwin >/dev/null ; then
 	open -a TotalTerminal 2>/dev/null
 	# Add homebrew to path
 	export PATH=$PATH:/usr/local/sbin
+	
+	# Setup a trash function
+	trash() {
+		CYAN="\x1B[36m"
+		RED="\x1B[31m"
+		RESET="\x1B[0m"
+		export FILE=$@
+		
+		# If the file can't be found, then search $PWD
+		[[ -e "$PWD/$FILE" ]] && export FILE=$PWD/$FILE
+		# If the file is found, then delete. Otherwise error
+		[[ -e "$FILE" ]] \
+			&& $(/usr/bin/env osascript -e 'tell application "Finder" to delete POSIX file "'$FILE'"' 1>/dev/null) \
+			|| echo -e "${RED}Cannot find the file ${CYAN}$FILE${RESET}"
+	}
 fi
 
 # Run RVM init

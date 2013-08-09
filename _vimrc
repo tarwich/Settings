@@ -4,11 +4,32 @@
 "  __________________________________________________ 
 " / Vundle                                           \ {{{
 
+" Setup Vundle:
+"  $ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+"
+
+set nocompatible               " be iMproved
+filetype off                   " required!
+
 set rtp+=~/Dropbox/Vim/vundle/
 call vundle#rc()
 Bundle 'gmarik/vundle'
 
+" Install Fuzzy Finder
+Bundle 'L9'
+Bundle 'FuzzyFinder'
+
+" Install NERD Commenter
+Bundle 'The-NERD-Commenter'
+
 " \__________________________________________________/ }}} 
+
+"  __________________________________________________
+" / NERDTree                                         \ {{{ 
+
+Bundle 'The-NERD-Tree'
+
+" \__________________________________________________/ }}}
 
 "  __________________________________________________
 " / VTreeExplorer                                    \ {{{ 
@@ -235,6 +256,10 @@ inoremap <CM-DOWN> <C-o>:copy +0<CR>
 inoremap <CM-UP> <C-o>:copy -1<CR>
 vnoremap <CM-DOWN> :copy '>+0<CR>gv
 vnoremap <CM-UP> :copy -1<CR>gv
+" Map CMD+/ to toggle line comment(s) (Plugin: The-NERD-Commenter)
+nnoremap <D-/> :call NERDComment(0, "toggle")<CR>
+vnoremap <D-/> :call NERDComment(0, "toggle")<CR>
+inoremap <D-/> <C-o>:call NERDComment(0, "toggle")<CR>
 
 "  __________________________________
 " /---------- Fuzzy Finder ----------\ "{{{
