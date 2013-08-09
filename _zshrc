@@ -18,6 +18,8 @@ COMPLETION_WAITING_DOTS="true"
 if expr "$OSTYPE" : darwin >/dev/null ; then
 	# Open the TotalTerminal app
 	open -a TotalTerminal 2>/dev/null
+	# Add homebrew to path
+	export PATH=$PATH:/usr/local/sbin
 fi
 
 # Run RVM init
