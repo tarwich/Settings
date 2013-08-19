@@ -57,5 +57,11 @@
 (global-set-key (kbd "S-<return>") 'newline-after)
 ; Keybind: CMD-UP	--> beginning-of-buffer
 (global-set-key (kbd "s-<up>") 'beginning-of-buffer)
-; Keybing: CMD-DOWN	--> end-of-buffer
+; Keybind: CMD-DOWN	--> end-of-buffer
 (global-set-key (kbd "s-<down>") 'end-of-buffer)
+; Keybind: SHIFT+CTRL+V --> scroll-up-line
+(global-set-key (kbd "C-S-v") 'scroll-up-line)
+; Keybind: SHIFT+META+V --> scroll-down-line
+(global-set-key (kbd "M-V") 'scroll-down-line)
+
+
