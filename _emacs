@@ -13,6 +13,17 @@
 (setq make-backup-files nil)
 ; Replace audible bell with visual one
 (setq visible-bell t)
+; Add marmalade to package manager
+(require 'package)
+(add-to-list 'package-archives '("marlalade" . "http:/marlalade-repo.org/packages/"))
+(package-initialize)
+; Add MELPA to package manager
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+; Highlite current line
+(require 'hl-line)
+(global-hl-line-mode t)
+; Disable wrapping of long lines
+(toggle-truncate-lines t)
 
 ; ==================================================
 ; 
