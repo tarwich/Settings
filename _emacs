@@ -11,7 +11,8 @@
 
 ; Completely disable backup files
 (setq make-backup-files nil)
-
+; Replace audible bell with visual one
+(setq visible-bell t)
 
 ; ==================================================
 ; 
