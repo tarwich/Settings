@@ -65,6 +65,8 @@
 (add-to-list 'load-path "~/.emacs.d/ecb")
 (setq-default ecb-tree-incremental-search (quote substring))
 (when (require 'ecb nil t) ; Attempt to load ECB, failing gracefully
+  ; Disable tip of the day
+  (setq ecb-tip-of-the-day nil)
   ; Incremental search (substring / prefix)
   ;(require 'ecb-autoloads)
 )
