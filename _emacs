@@ -20,8 +20,6 @@
   (global-hl-line-mode t))
 ; Disable wrapping of long lines
 ;(setq-default truncate-lines t)
-; Setup solarized theme (dark)
-(load-theme 'solarized-dark t)
 
 ; ==================================================
 ; Package repositories
@@ -36,8 +34,9 @@
   ; ==================================================
   (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
   ; -- After all package managers have been added
-  (package-initialize)
-)
+  (package-initialize))
+; Setup solarized theme (dark)
+(load-theme 'solarized-dark t)
 ; ==================================================
 ; Auto Complete
 ; ==================================================
@@ -51,7 +50,7 @@
 ; ==================================================
 ; IDO - Interactively Do Things
 ; ==================================================
-(when (require 'ido) nil t) (ido-mode t))
+(when (require 'ido nil t) (ido-mode t))
 ; ==================================================
 ; CEDET     (For ECB)
 ; ==================================================
