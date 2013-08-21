@@ -11,6 +11,8 @@
 
 ; Completely disable backup files
 (setq make-backup-files nil)
+; Disable toolbar in XEmacs
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 ; Replace audible bell with visual one
 (setq visible-bell t)
 ; Add marmalade to package manager
@@ -27,25 +29,27 @@
 ; Setup solarized theme (dark)
 (load-theme 'solarized-dark t)
 ; Activate autocomplete mode
-(add-to-list 'load-path "~/.emacs.d")    ; This may not be appeared if you have already added.
-(require 'auto-complete)
-(require 'auto-complete-config) 
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-(ac-config-default)
-(ac-set-trigger-key "\t")
+(add-to-list 'load-path "~/.emacs.d")
+(when (require 'auto-complete nil t)
+  (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+  (when (require 'auto-complete-config)
+    (ac-config-default))
+  (ac-set-trigger-key "\t"))
 ; Load IDO
 (require 'ido)
 (ido-mode t)
 ; Load CEDET (For ECB)
 (add-to-list 'load-path "~/.emacs.d/cedet")
-(unless (featurep 'cedet) (load "cedet/common/cedet.el"))
-(global-ede-mode 1)
-(semantic-load-enable-code-helpers)
-(global-srecode-minor-mode 1)
-; Activate ECB
-;; (add-to-list 'load-path "~/.emacs.d/ecb")
-;; (require 'ecb)
-;; (require 'ecb-autoloads)
+(when (require 'cedet "cedet/common/cedet.el" t)
+  ; Recommended fix from: http://sourceforge.net/mailarchive/forum.php?thread_name=87mxl9lx0w.fsf%40randomsample.de&forum_name=cedet-semantic
+  (semantic-mode t)
+  (global-ede-mode 1))
+; ==================================================
+; ECB
+; ==================================================
+(add-to-list 'load-path "~/.emacs.d/ecb")
+(require 'ecb)
+;(require 'ecb-autoloads)
 
 
 ; ==================================================
