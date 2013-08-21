@@ -15,30 +15,46 @@
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 ; Replace audible bell with visual one
 (setq visible-bell t)
-; Add marmalade to package manager
-(require 'package)
-(add-to-list 'package-archives '("marlalade" . "http:/marlalade-repo.org/packages/"))
-(package-initialize)
-; Add MELPA to package manager
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+; ==================================================
+; Package repositories
+; ==================================================
+(when (require 'package)
+  ; ==================================================
+  ; Marmalade
+  ; ==================================================
+  (add-to-list 'package-archives '("marmalade" . "http:/marlalade-repo.org/packages/"))
+  ; ==================================================
+  ; MELPA
+  ; ==================================================
+  (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+  ; -- After all package managers have been added
+  (package-initialize)
+)
 ; Highlite current line
-(require 'hl-line)
-(global-hl-line-mode t)
+(when (require 'hl-line)
+  (global-hl-line-mode t))
 ; Disable wrapping of long lines
 ;(setq-default truncate-lines t)
 ; Setup solarized theme (dark)
 (load-theme 'solarized-dark t)
-; Activate autocomplete mode
+; ==================================================
+; Auto Complete
+; ==================================================
 (add-to-list 'load-path "~/.emacs.d")
+; Activate autocomplete mode
 (when (require 'auto-complete nil t)
   (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
   (when (require 'auto-complete-config)
     (ac-config-default))
   (ac-set-trigger-key "\t"))
-; Load IDO
-(require 'ido)
-(ido-mode t)
+; ==================================================
+; IDO - Interactively Do Things
+; ==================================================
+(when (require 'ido) nil t) (ido-mode t))
 ; Load CEDET (For ECB)
+; ==================================================
+; CEDET     (For ECB)
+; ==================================================
 (add-to-list 'load-path "~/.emacs.d/cedet")
 (when (require 'cedet "cedet/common/cedet.el" t)
   ; Recommended fix from: http://sourceforge.net/mailarchive/forum.php?thread_name=87mxl9lx0w.fsf%40randomsample.de&forum_name=cedet-semantic
@@ -48,11 +64,11 @@
 ; ECB
 ; ==================================================
 (add-to-list 'load-path "~/.emacs.d/ecb")
-; Incremental search (substring / prefix)
 (setq-default ecb-tree-incremental-search (quote substring))
-(require 'ecb)
-;(require 'ecb-autoloads)
-
+(when (require 'ecb nil t) ; Attempt to load ECB, failing gracefully
+  ; Incremental search (substring / prefix)
+  ;(require 'ecb-autoloads)
+)
 
 ; ==================================================
 ; 
