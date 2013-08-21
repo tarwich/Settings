@@ -15,6 +15,14 @@
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 ; Replace audible bell with visual one
 (setq visible-bell t)
+; Highlite current line
+(when (require 'hl-line)
+  (global-hl-line-mode t))
+; Disable wrapping of long lines
+;(setq-default truncate-lines t)
+; Setup solarized theme (dark)
+(load-theme 'solarized-dark t)
+
 ; ==================================================
 ; Package repositories
 ; ==================================================
@@ -30,13 +38,6 @@
   ; -- After all package managers have been added
   (package-initialize)
 )
-; Highlite current line
-(when (require 'hl-line)
-  (global-hl-line-mode t))
-; Disable wrapping of long lines
-;(setq-default truncate-lines t)
-; Setup solarized theme (dark)
-(load-theme 'solarized-dark t)
 ; ==================================================
 ; Auto Complete
 ; ==================================================
@@ -51,7 +52,6 @@
 ; IDO - Interactively Do Things
 ; ==================================================
 (when (require 'ido) nil t) (ido-mode t))
-; Load CEDET (For ECB)
 ; ==================================================
 ; CEDET     (For ECB)
 ; ==================================================
