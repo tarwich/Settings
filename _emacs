@@ -48,6 +48,8 @@
 ; ECB
 ; ==================================================
 (add-to-list 'load-path "~/.emacs.d/ecb")
+; Incremental search (substring / prefix)
+(setq-default ecb-tree-incremental-search (quote substring))
 (require 'ecb)
 ;(require 'ecb-autoloads)
 
