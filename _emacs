@@ -23,7 +23,30 @@
 (require 'hl-line)
 (global-hl-line-mode t)
 ; Disable wrapping of long lines
-(toggle-truncate-lines t)
+;(setq-default truncate-lines t)
+; Setup solarized theme (dark)
+(load-theme 'solarized-dark t)
+; Activate autocomplete mode
+(add-to-list 'load-path "~/.emacs.d")    ; This may not be appeared if you have already added.
+(require 'auto-complete)
+(require 'auto-complete-config) 
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(ac-config-default)
+(ac-set-trigger-key "\t")
+; Load IDO
+(require 'ido)
+(ido-mode t)
+; Load CEDET (For ECB)
+(add-to-list 'load-path "~/.emacs.d/cedet")
+(unless (featurep 'cedet) (load "cedet/common/cedet.el"))
+(global-ede-mode 1)
+(semantic-load-enable-code-helpers)
+(global-srecode-minor-mode 1)
+; Activate ECB
+;; (add-to-list 'load-path "~/.emacs.d/ecb")
+;; (require 'ecb)
+;; (require 'ecb-autoloads)
+
 
 ; ==================================================
 ; 
