@@ -130,8 +130,8 @@ Bundle 'Solarized'
 :set background=dark
 :colorscheme solarized
 " Load php bundle
-Bundle 'php'
-Bundle 'php.vim'
+"Bundle 'php'
+"Bundle 'php.vim'
 
 " \__________________________________________________/ }}}
 

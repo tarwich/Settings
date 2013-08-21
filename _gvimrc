@@ -120,7 +120,7 @@ command! -nargs=+ -complete=command TabMessage call RedirMessages(<q-args>, 'tab
 :set number
 
 " Set right-margin
-:set cc=80
+:set cc=120
 ":highlight OverLength ctermbg=darkred ctermfg=white guibg=#FFD9D9
 ":match OverLength /\%81v.\+/
 
