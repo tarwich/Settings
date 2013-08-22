@@ -1,4 +1,5 @@
 
+
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
 ; ==================================================
@@ -33,6 +34,7 @@
 	      cedet
 	      ecb
 	      hl-line
+	      yaml-mode
 ))
 
 ; Completely disable backup files
