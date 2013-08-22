@@ -41,8 +41,40 @@
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 ; Replace audible bell with visual one
 (setq visible-bell t)
+; Highlite current line
+(when (require 'hl-line)
+  (global-hl-line-mode t))
 ; Disable wrapping of long lines
 ;(setq-default truncate-lines t)
+
+
+; ==================================================
+; 
+; 
+; Functions
+; 
+; 
+; ==================================================
+
+; ==================================================
+; newline-after
+; --------------------------------------------------
+; Function for adding a newline after current
+; ==================================================
+(defun newline-after ()
+  (interactive)
+  (end-of-line)
+  (newline-and-indent)
+)
+
+
+; ==================================================
+; 
+; 
+; Keybinds
+; 
+; 
+; ==================================================
 
 
 
