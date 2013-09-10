@@ -123,7 +123,7 @@ proc mergeComics {count} {
 	
 	# ImageMagick the files!
 	puts "Merging images"
-	exec -ignorestderr $MONTAGE {*}$files -geometry +10+10 -shadow -background none [file nativename $BACKGROUND_PATH]
+	exec -ignorestderr $MONTAGE {*}$files -geometry +10+10 -shadow -background none -font Times-Roman [file nativename $BACKGROUND_PATH]
 }
 
 ##################################################
