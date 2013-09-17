@@ -1,0 +1,18 @@
+[
+	// S-enter : New line after
+	{ "keys": ["shift+enter"]          , "command": "run_macro_file", "args": {"file": "res://Packages/Default/Add Line.sublime-macro"} },
+	// DS-enter: New line before
+	{ "keys": ["super+shift+enter"]    , "command": "run_macro_file", "args": {"file": "res://Packages/Default/Add Line Before.sublime-macro"} },
+	// CS+`    : Show console
+	{ "keys": ["ctrl+shift+backquote"] , "command": "show_panel", "args": {"panel": "console", "toggle": true} },
+	// A-up    : Move line up
+	{ "keys": ["alt+up"]               , "command": "swap_line_up" },
+	// A-down  : Move line down
+	{ "keys": ["alt+down"]             , "command": "swap_line_down" },
+	// S-d     : Delete line
+	{ "keys": ["super+d"]              , "command": "run_macro_file", "args": {"file": "res://Packages/Default/Delete Line.sublime-macro"} },
+	// Sa-up   : Duplicate line up
+	{ "keys": ["super+alt+up"]         , "command": "duplicate_line_up"},
+	// Sa-down : Duplicate line down
+	{ "keys": ["super+alt+down"]       , "command": "duplicate_line_down"},
+]

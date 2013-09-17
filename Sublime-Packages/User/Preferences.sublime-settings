@@ -1,0 +1,14 @@
+{
+	"auto_match_enabled": false,
+	"color_scheme": "Packages/Color Scheme - Default/Solarized (Dark).tmTheme",
+	"ignored_packages":
+	[
+		"Vintage"
+	],
+	"rulers":
+	[
+		120
+	],
+	"spell_check": false,
+	"trim_automatic_white_space": false
+}
