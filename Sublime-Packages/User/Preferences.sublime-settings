@@ -1,14 +1,18 @@
 {
 	"auto_match_enabled": false,
 	"color_scheme": "Packages/Color Scheme - Default/Solarized (Dark).tmTheme",
+	"highlight_line": true,
 	"ignored_packages":
 	[
-		"Vintage"
+		"Vintage",
+		"SublimeCodeIntel",
+		"BracketHighlighter"
 	],
 	"rulers":
 	[
 		120
 	],
 	"spell_check": false,
-	"trim_automatic_white_space": false
+	"trim_automatic_white_space": false,
+	"jsdocs_extend_double_slash": false,
 }
