@@ -2,8 +2,14 @@
 	"installed_packages":
 	[
 		"AlignTab",
+		"Bracketeer",
+		"BracketHighlighter",
+		"DocBlockr",
+		"Edit Preferences",
+		"Nettuts+ Fetch",
 		"Schemr",
 		"Select Quoted",
+		"SublimeCodeIntel",
 		"SublimeGit"
 	]
 }
