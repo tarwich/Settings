@@ -3,3 +3,10 @@
 # Mac directory settings
 .DS_Store
 
+#
+# Sublime Text exclusions
+#
+# Cache
+Sublime-Packages/User/Package Control.cache/
+# Pid file I think
+Sublime-Packages/User/Package Control.last-run
