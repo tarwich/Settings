@@ -44,6 +44,6 @@ if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
 fi
 
 # Include git-flow
-source "git-flow-completion.zsh"
+source "${0%/*}/git-flow-completion.zsh"
 
 # vim: set ft=zsh :
