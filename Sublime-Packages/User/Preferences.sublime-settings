@@ -8,11 +8,11 @@
 		"SublimeCodeIntel",
 		"BracketHighlighter"
 	],
+	"jsdocs_extend_double_slash": false,
 	"rulers":
 	[
 		120
 	],
 	"spell_check": false,
-	"trim_automatic_white_space": false,
-	"jsdocs_extend_double_slash": false,
+	"trim_automatic_white_space": false
 }
