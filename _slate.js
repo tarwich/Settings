@@ -29,7 +29,7 @@ sammyd.main = function() {
 			// Return the smaller of 100 or the percent of 100 that the width should be
 			return 100*Math.min(1, size.width/size.height);
 		},
-		// The height of the Window Hints ovelay in pixels. (can be an expression)
+		// The height of the Window Hints overlay in pixels. (can be an expression)
 		windowHintsHeight             : function(window) {
 			// Cache the size of the window so we don't have to keep calling it
 			var size = window.size();
