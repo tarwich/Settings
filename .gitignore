@@ -10,3 +10,4 @@
 Sublime-Packages/User/Package Control.cache/
 # Pid file I think
 Sublime-Packages/User/Package Control.last-run
+*.pyc
