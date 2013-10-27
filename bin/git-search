@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+import io, argparse, urllib, urllib2, json, ansi, re
+
+SEARCH_URL = "https://api.github.com/search/repositories?"
+
+def main():
+    # Create an argument parser
+    parser = argparse.ArgumentParser(description="Search github.com for a repository")
+    # Create the argument for search term
+    parser.add_argument("search_term")
+    # Parse the arguments
+    args = parser.parse_args()
+    # Do the search
+    do_search(args)
+    
+def do_search(args):
+    # Get the search term from argv
+    search_term = args.search_term
+    # Inject our search into the search url
+    search_url = SEARCH_URL + urllib.urlencode({"q": search_term})
+    # Make our web request
+    request = urllib2.Request(search_url, headers={"Accept":"application/vnd.github.preview"})
+    # Send the request
+    # response = urllib2.urlopen(request)
+    response = io.open("response.txt")
+    # Parse the response
+    results = json.loads(response.read())
+    # Initialize the name width
+    name_width = 4
+    # Go through the results and calculate width of full name
+    for result in results["items"]:
+        # Get the bigger item
+        name_width = max(name_width, len(result["full_name"]))
+    # Print all the results (actually, 1 - 10)
+    for result in results["items"][0:10]:
+        # Create the line we're about to spit out, but store the line so we can highlight terms
+        line = u'<CYAN>{0:{name_width}}<RESET>: {1}'.format(result["full_name"], result["description"], name_width=name_width)
+        # Highlite the terms
+        line = re.sub('(%s)' % search_term, r'<GREEN>\1<RESET>', line)
+        # Inject the ANSI
+        line = ansi.format(line)
+        # Print the line
+        print(line)
+    
+main()
