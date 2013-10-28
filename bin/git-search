@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import io, argparse, urllib, urllib2, json, ansi, re
+import ansi, argparse, io, json, re, urllib, urllib2
 
 SEARCH_URL = "https://api.github.com/search/repositories?"
 
@@ -21,8 +21,8 @@ def do_search(args):
     # Make our web request
     request = urllib2.Request(search_url, headers={"Accept":"application/vnd.github.preview"})
     # Send the request
-    # response = urllib2.urlopen(request)
-    response = io.open("response.txt")
+    response = urllib2.urlopen(request)
+    # response = io.open("response.txt")
     # Parse the response
     results = json.loads(response.read())
     # Initialize the name width
