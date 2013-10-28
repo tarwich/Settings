@@ -35,7 +35,7 @@ def do_search(args):
         # Create the line we're about to spit out, but store the line so we can highlight terms
         line = u'<CYAN>{0:{name_width}}<RESET>: {1}'.format(result["full_name"], result["description"], name_width=name_width)
         # Highlite the terms
-        line = re.sub('(%s)' % search_term, r'<GREEN>\1<RESET>', line)
+        line = re.sub('(%s)' % search_term, r'<GREEN>\1<RESET>', line, 0, re.IGNORECASE)
         # Inject the ANSI
         line = ansi.format(line)
         # Print the line
