@@ -22,7 +22,6 @@ def do_search(args):
     request = urllib2.Request(search_url, headers={"Accept":"application/vnd.github.preview"})
     # Send the request
     response = urllib2.urlopen(request)
-    # response = io.open("response.txt")
     # Parse the response
     results = json.loads(response.read())
     # Initialize the name width
