@@ -1,7 +1,9 @@
 {
+	"auto_complete": false,
 	"auto_match_enabled": false,
 	"color_scheme": "Packages/Color Scheme - Default/Solarized (Dark).tmTheme",
 	"highlight_line": true,
+	"hot_exit": false,
 	"ignored_packages":
 	[
 		"Vintage",
@@ -9,10 +11,12 @@
 		"BracketHighlighter"
 	],
 	"jsdocs_extend_double_slash": false,
+	"remember_open_files": false,
 	"rulers":
 	[
 		120
 	],
+	"scroll_past_end": true,
 	"spell_check": false,
 	"trim_automatic_white_space": false
 }

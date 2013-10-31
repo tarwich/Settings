@@ -10,9 +10,13 @@
 	// A-down  : Move line down
 	{ "keys": ["alt+down"]             , "command": "swap_line_down" },
 	// S-d     : Delete line
-	{ "keys": ["super+d"]              , "command": "run_macro_file", "args": {"file": "res://Packages/Default/Delete Line.sublime-macro"} },
+	// { "keys": ["super+d"]              , "command": "run_macro_file", "args": {"file": "res://Packages/Default/Delete Line.sublime-macro"} },
 	// Sa-up   : Duplicate line up
 	{ "keys": ["super+alt+up"]         , "command": "duplicate_line_up"},
 	// Sa-down : Duplicate line down
 	{ "keys": ["super+alt+down"]       , "command": "duplicate_line_down"},
+	// Super+Alt+Shift+f : Select By Regex
+	{ "keys": ["super+alt+shift+f"]    , "command": "select_by_regex"},
+	// Reveal in sidebar
+	{ "keys": ["ctrl+super+r"]         , "command": "reveal_in_side_bar" },
 ]
