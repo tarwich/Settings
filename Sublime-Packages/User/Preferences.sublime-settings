@@ -2,13 +2,13 @@
 	"auto_complete": false,
 	"auto_match_enabled": false,
 	"color_scheme": "Packages/Color Scheme - Default/Solarized (Dark).tmTheme",
+	"highlight_delay": 300,
 	"highlight_line": true,
 	"hot_exit": false,
 	"ignored_packages":
 	[
 		"Vintage",
-		"SublimeCodeIntel",
-		"BracketHighlighter"
+		"SublimeCodeIntel"
 	],
 	"jsdocs_extend_double_slash": false,
 	"remember_open_files": false,
