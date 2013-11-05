@@ -3,14 +3,15 @@
 	[
 		"AlignTab",
 		"Bracketeer",
-		"BracketHighlighter",
 		"DocBlockr",
 		"Edit Preferences",
 		"Haxe",
 		"IRC",
+		"Marking Changed Rows",
 		"Nettuts+ Fetch",
 		"Schemr",
 		"Select Quoted",
+		"Shell Command",
 		"SublimeCodeIntel",
 		"SublimeGit"
 	]
