@@ -98,4 +98,9 @@
 ; Change RET to newline-and-indent
 ; TODO: Learn how to define a key for a mode
 ;(global-set-key (kbd "<return>") 'newline-and-indent)
+(setq-default php-mode-hook (lambda () (interactive)
+			      (setq-default tab-width 8)    
+			      ))
+; Set tab width to 8 spaces ... globally
+(setq-default tab-width 8)
 
