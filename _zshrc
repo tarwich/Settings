@@ -11,6 +11,9 @@ zstyle '*' single-ignored complete
 plugins=(brew dircycle gem git)
 # Tell zsh to show red dots while searching for a completion
 COMPLETION_WAITING_DOTS="true"
+# Disable autocorrect
+unsetopt correct_all
+export DISABLE_CORRECTION="true"
 
 #
 # OSX Settings
@@ -26,14 +29,17 @@ if expr "$OSTYPE" : darwin >/dev/null ; then
 		CYAN="\x1B[36m"
 		RED="\x1B[31m"
 		RESET="\x1B[0m"
-		export FILE=$@
 		
-		# If the file can't be found, then search $PWD
-		[[ -e "$PWD/$FILE" ]] && export FILE=$PWD/$FILE
-		# If the file is found, then delete. Otherwise error
-		[[ -e "$FILE" ]] \
-			&& $(/usr/bin/env osascript -e 'tell application "Finder" to delete POSIX file "'$FILE'"' 1>/dev/null) \
-			|| echo -e "${RED}Cannot find the file ${CYAN}$FILE${RESET}"
+		for file in $@ ; do 
+			export FILE=$file
+			
+			# If the file can't be found, then search $PWD
+			[[ -e "$PWD/$FILE" ]] && export FILE=$PWD/$FILE
+			# If the file is found, then delete. Otherwise error
+			[[ -e "$FILE" ]] \
+				&& $(/usr/bin/env osascript -e 'tell application "Finder" to delete POSIX file "'$FILE'"' 1>/dev/null) \
+				|| echo -e "${RED}Cannot find the file ${CYAN}$FILE${RESET}"
+		done
 	}
 fi
 
