@@ -2,7 +2,9 @@
 	"installed_packages":
 	[
 		"AlignTab",
+		"ApacheConf.tmLanguage",
 		"Bracketeer",
+		"CTags",
 		"DocBlockr",
 		"Edit Preferences",
 		"FileDiffs",
@@ -11,6 +13,7 @@
 		"Marking Changed Rows",
 		"Nettuts+ Fetch",
 		"Schemr",
+		"Search Anywhere",
 		"Select Quoted",
 		"Shell Command",
 		"SublimeCodeIntel",

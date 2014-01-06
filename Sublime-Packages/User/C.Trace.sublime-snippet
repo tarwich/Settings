@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+#define TRACE(message, args...) printf("%s:%d: " message "\n", std::max(strrchr(__FILE__, '/')+1, (char*) __FILE__), __LINE__, ##args);
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>trace</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+</snippet>

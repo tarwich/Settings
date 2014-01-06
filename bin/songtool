@@ -1,0 +1,131 @@
+#!/usr/bin/env python
+
+import argparse
+import curses
+import math
+
+class SongTool(object):
+    def __init__(self):
+        # Initialize the songs to an empty list
+        self.songs  = []
+        
+    def main(self):
+        # Make a new argument parser
+        args = argparse.ArgumentParser(description="Modify things about songs", add_help=True)
+        # -a takes the name of an artist (optional argument)
+        args.add_argument("-a", "--artist", nargs=1, help="Set the artist for all operations")
+        # -d is the delimiter for where the name of the song ends
+        args.add_argument("-d", "--delimiter", nargs=1, default=".", help="Set the delimiter for song title")
+        # Allow filenames as arguments
+        args.add_argument("songs", metavar="song", nargs="+")
+        # Chew the arguments and discard the parser
+        args = args.parse_args()
+        try:
+            # Setup a window
+            self.screen = curses.initscr()
+            # Process the songs
+            self.run(args)
+        finally:
+            # Curses cleanup
+            curses.endwin()
+
+    def display(self):
+        self.screen.addstr(row, col, text)
+        
+    def run(self, args):
+        delimiter = args.delimiter
+        # Initialize the running variable, because `while running` is better than `while true`
+        self.running = True
+        # Add all the songs
+        for song in args.songs: self.songs.append(Song(filename=song, delimiter=delimiter))
+        # Show the song list
+        SongListBox(self.screen, self.songs).show()
+
+class ListBox():
+    def __init__(self, screen, items=[]):
+        self.screen = screen
+        self.items = items
+        # Get the size of the longest line (+20 is arbitrary)
+        self.width = len(max(self.items, key=len)) + 20
+        # Get the height of the list
+        self.height = min(len(items)+2, screen.getmaxyx()[0]);
+        screenHeight, screenWidth = self.screen.getmaxyx()
+        self.x = int(screenHeight - self.height / 2)
+        self.y = int(screenWidth - self.width / 2)
+        self.x, self.y = (1, 1)
+        self.window = self.screen.subwin(self.x, self.y)
+        self.window.keypad(1)
+        self.window.leaveok(1)
+        curses.noecho()
+        self.current_row = 0
+        self.start_row = 0
+        self.end_row = 0
+    
+    def on_key(self, key):
+        if   key == curses.KEY_DOWN: self.current_row += 1
+        elif key == curses.KEY_UP  : self.current_row -= 1
+        elif key == ord("q")       : self.running = False
+    
+    def paint(self):
+        self.window.erase()
+        start = self.start_row
+        end = self.end_row
+        row = 1
+        for item in self.items[start:end]:
+            if row-1 + start == self.current_row: self.window.attron(curses.A_REVERSE)
+            else: self.window.attroff(curses.A_REVERSE)
+            self.window.addstr(row, 1, str(item))
+            row += 1
+        self.window.attroff(curses.A_REVERSE)
+        self.window.border()
+        self.window.refresh()
+        
+    def show(self):
+        self.running = True
+        
+        while(self.running):
+            self.update()
+            self.paint()
+            self.on_key(self.window.getch())
+            
+    def update(self):
+        # Keep current row in bounds
+        self.current_row = sorted((0, self.current_row, len(self.items)-1))[1]
+        # Update the start and end row to contain the current row
+        max_item = len(self.items)
+        max_rows = min(self.height-3, max_item-1)
+        edge = int(math.ceil(max_rows * .20))
+        if self.current_row - self.start_row < edge:
+            self.start_row = max(0, self.current_row - edge)
+            self.end_row = self.start_row + max_rows
+        if self.end_row - self.current_row < edge:
+            self.end_row = min(self.current_row + edge, max_item)
+            self.start_row = max(0, self.end_row - max_rows)
+            
+class SongListBox(ListBox):
+    def on_key(self, key):
+        if   key == ord("+")         : self.items[self.current_row].grow_title()
+        elif key == ord("-")         : self.items[self.current_row].shrink_title()
+        elif key == curses.KEY_RIGHT : self.items[self.current_row].shift_title(1)
+        elif key == curses.KEY_LEFT  : self.items[self.current_row].shift_title(-1)
+        else:
+            ListBox.on_key(self, key)
+    
+class Song():
+    def __init__(self, artist="", title="", filename="", delimiter="."):
+        self.artist   = artist
+        self.title    = title
+        self.filename = filename
+        self.artist_start = 0
+        self.artist_end   = 1
+        self.title_start  = 1
+        self.title_end    = 2
+        
+    def __len__(self):
+        return len(str(self))
+        
+    def __str__(self):
+        return "%s - %s - %s" % (self.artist, self.title, self.filename)
+    
+# Call the song tool
+if __name__ == "__main__": SongTool().main()

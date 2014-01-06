@@ -1,0 +1,6 @@
+{
+	"cmd": ["make"],
+	"file_regex": "^(.*?)\\((\\d+),(\\d+)\\):(.*)",
+	"selector": "source.cs",
+	"working_dir": "${project_path:${folder}}"
+}

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+make tags 2>/dev/null || ctags $@
