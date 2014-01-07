@@ -26,5 +26,5 @@
 	// Toggle word wrap
 	{ "keys": ["ctrl+shift+w"]         , "command": "toggle_setting", "args": {"setting": "word_wrap"} },
 	// Switch header / implementation
-	{ "keys": ["ctrl+super+up"]        , "command": "switch_file", "args": {"extensions": ["cpp", "hpp", "c", "h"]} },
+	{ "keys": ["ctrl+super+up"]        , "command": "switch_file", "args": {"extensions": ["c", "cpp", "h", "hpp", "m", "mm"]} },
 ]
