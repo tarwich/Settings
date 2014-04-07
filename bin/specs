@@ -7,8 +7,11 @@ def foo():
 def main():
     # Create an argument parser for the argv
     parser = argparse.ArgumentParser(description='Gather system specs for bug reporting')
+    group =  parser.add_mutually_exclusive_group(required=True)
     # --app argument
-    parser.add_argument("--application", "-a", dest="APPLICATION", required=False, help="Get additional specs for this application (if installed)")
+    group.add_argument("--application", "-a", help="Get additional specs for this application (if installed)")
+    # -os argument
+    group.add_argument("--os-only", "-o", action="store_true", help="Only show information about the operating system (exclude the app)")
     # Parse the CLI arguments
     args = parser.parse_args()
     # What to do on each platform
@@ -19,13 +22,16 @@ def main():
     if sys.platform in platform_mappings: specs = platform_mappings[sys.platform](args)
     # Didn't recognize the platform, throw error
     else: return error('Platform "%s" is not recognized' % sys.platform)
-    print str.join('\n', [
+    lines = [
         '%(os)s:', 
         '  arch: %(arch)s',
+        ];
+    if args.application: lines += [
         '%(application_name)s:',
         '  version: %(application_version)s',
         '  architecture: %(application_arch)s',
-        ]) % specs
+    ];
+    print str.join('\n', lines) % specs
           
 def error(message): print('ERROR: %s' % message)
     
@@ -36,9 +42,9 @@ def darwin_specs(arguments):
         "arch" : subprocess.Popen(["uname", "-m"], stdout=subprocess.PIPE).stdout.read().strip(),
     }
     # Get information about the application 
-    if(arguments.APPLICATION):
+    if(arguments.application):
         # Get information about the app
-        stream = subprocess.Popen(["lsappinfo", "info", arguments.APPLICATION], stdout=subprocess.PIPE).stdout
+        stream = subprocess.Popen(["lsappinfo", "info", arguments.application], stdout=subprocess.PIPE).stdout
         # Process the application information
         text = stream.read()
         # Prepare the tag hash
@@ -47,10 +53,10 @@ def darwin_specs(arguments):
         for tag in re.findall(r'(\w+)\s*=\s*(".*?"|[^\s]*)', text):
             tags[str.lower(tag[0])] = str.strip(tag[1], '"')
         # Make the tags into what we want
-        specs["application_name"] = arguments.APPLICATION
+        specs["application_name"] = arguments.application
         specs["application_version"] = tags["version"]
         specs["application_arch"] = tags["arch"]
-        return specs
+    return specs
 
 def darwin_os_info():
     # Get OS information
