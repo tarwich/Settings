@@ -1,106 +1,104 @@
+
+;; ==================================================
+;;
+;;
+;; El-Get
+;;
+;;
+;; ==================================================
+
+;; Install El-Get
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
-; ==================================================
-;
-;
-; El-Get
-;
-;
-; ==================================================
-
-; Install El-Get (Downloading if necessary)
 (unless (require 'el-get nil 'noerror)
   (with-current-buffer
       (url-retrieve-synchronously
-       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
-    (let (el-get-master-branch)
-      (goto-char (point-max))
-      (eval-print-last-sexp))))
+       "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
+    (goto-char (point-max))
+    (eval-print-last-sexp)))
 
-; Add Marmalade to the package repository list. I don't know why I put this here. Don't know if it's being used. 
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
 
-; Tell El-Get where to... get... things
-(setq el-get-sources '(
-		       (:name cedet :type http :url "http://downloads.sourceforge.net/project/cedet/cedet/cedet-1.1.tar.gz")
-		       (:name color-theme-solarized :after (progn (load-theme 'solarized-dark t) (setq ecb-tip-of-the-day nil)))
-		       (:name ecb :type github :url "https://github.com/alexott/ecb")
-		       (:name hl-line :type builtin :after (global-hl-line-mode t))
-		       (:name ido :type builtin :after (ido-mode t))
-		       ))
-; Install El-Get things
-(el-get nil '(
-	      cedet			; Needed for ECB
-	      color-theme-solarized	; Solarized color theme
-	      ecb			; IDE layout
-	      el-get			; El-Get. I think this should keep El-Get upgraded, but I'm not sure
-	      hl-line			; Highlight current line
-	      ido			; Interactively do things
-	      ido-ubiquitous		; Use IDO nearly everywhere
-	      tabbar                    ; Bar to show buffer in tabs 
-	      yaml-mode			; Interactively do things
-	      php-mode                  ; PHP mode
-))
+;; Install packages
+(el-get-bundle color-theme-solarized)
+(el-get-bundle ido-ubiquitous)
 
-; Completely disable backup files
+;; ==================================================
+;;
+;; 
+;; Configure General Settings
+;;
+;; 
+;; ==================================================
+
+;; Completely disable backup files
 (setq make-backup-files nil)
 (setq-default make-backup-files nil)
 (setq auto-save-default nil)
-; Disable toolbar in XEmacs
+;; Disable toolbar in XEmacs
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-; Replace audible bell with visual one
+;; Replace audible bell with visual one
 (setq visible-bell t)
-; Highlite current line
+;; Highlite current line
 (when (require 'hl-line)
   (global-hl-line-mode t))
-; Disable wrapping of long lines
-;(setq-default truncate-lines t)
+;; Disable wrapping of long lines
+;;(setq-default truncate-lines t)
+;; Set tab width to 4 spaces ... globally
+(setq-default tab-width 4)
+;; Don't let align-regexp use tabs
+(defadvice align-regexp (around align-regexp-with-spaces activate)
+  (let ((indent-tabs-mode nil))
+    ad-do-it))
+;; Globally enable IDO-Mode (Interactively do things)
+(ido-mode 1)
+(ido-ubiquitous-mode 1)
+;; Enable the solarized theme
+(load-theme 'solarized-dark t)
+;; Set the hl-line background
+(set-face-background 'hl-line "#93a1a1") ; Or #eee8d5
+;;(setq solarized-broken-srgb nil)
 
-; ==================================================
-;
-;
-; Functions
-;
-;
-; ==================================================
+;; ==================================================
+;;
+;;
+;; Functions
+;;
+;;
+;; ==================================================
 
-; ==================================================
-; newline-after
-; --------------------------------------------------
-; Function for adding a newline after current
-; ==================================================
+;; ==================================================
+;; newline-after
+;; --------------------------------------------------
+;; Function for adding a newline after current
+;; ==================================================
 (defun newline-after ()
   (interactive)
   (end-of-line)
   (newline-and-indent)
-)
+  )
 
 
-; ==================================================
-;
-;
-; Keybinds
-;
-;
-; ==================================================
+;; ==================================================
+;;
+;;
+;; Keybinds
+;;
+;;
+;; ==================================================
 
-; TODO: Learn how to define a key for a mode
+										; TODO: Learn how to define a key for a mode
 (global-set-key (kbd "S-<return>") 'newline-after)
-; Home + End
+										; Home + End
 (global-set-key (kbd "s-<down>") 'end-of-buffer)
 (global-set-key (kbd "s-<up>") 'beginning-of-buffer)
-; Tabbar next / prev
+										; Tabbar next / prev
 (global-set-key (kbd "s-}") 'tabbar-forward)
 (global-set-key (kbd "s-{") 'tabbar-backward)
-; C-Tab --> Insert tab
-; TODO: Learn how to define a key for a mode
+										; C-Tab --> Insert tab
 (global-set-key (kbd "C-<tab>") (lambda () (interactive) (insert "\t")))
-; Change RET to newline-and-indent
-; TODO: Learn how to define a key for a mode
-;(global-set-key (kbd "<return>") 'newline-and-indent)
-(setq-default php-mode-hook (lambda () (interactive)
-			      (setq-default tab-width 8)    
-			      ))
-; Set tab width to 8 spaces ... globally
-(setq-default tab-width 8)
+										; Change RET to newline-and-indent
+;;(global-set-key (kbd "<return>") 'newline-and-indent)
+
+
 
