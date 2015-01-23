@@ -54,10 +54,17 @@
 (ido-mode 1)
 (ido-ubiquitous-mode 1)
 ;; Enable the solarized theme
-(load-theme 'solarized-dark t)
+;(color-theme-initialize)
+;(setq color-theme-is-global t)
+;(require 'color-theme-solarized)
+(setq solarized-termcolors 256)
+(color-theme-solarized-dark)
+;(load-theme 'solarized-dark t)
 ;; Set the hl-line background
-(set-face-background 'hl-line "#93a1a1") ; Or #eee8d5
-;;(setq solarized-broken-srgb nil)
+(set-face-background 'hl-line "#e4e4e4")
+;(set-face-background 'default "#262626")
+
+
 
 ;; ==================================================
 ;;
