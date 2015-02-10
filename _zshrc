@@ -14,13 +14,15 @@ COMPLETION_WAITING_DOTS="true"
 # Disable autocorrect
 unsetopt correct_all
 export DISABLE_CORRECTION="true"
+# Enable more brace expansion
+setopt braceccl
 
 #
 # OSX Settings
 #
 if expr "$OSTYPE" : darwin >/dev/null ; then
 	# Open the TotalTerminal app
-	open -a TotalTerminal 2>/dev/null
+	# open -a TotalTerminal 2>/dev/null
 	# Setup homebrew
 	export PATH=/usr/local/bin:$PATH
 	
@@ -50,13 +52,8 @@ if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
 fi
 
 # Add my personal bin set
-PATH=$PATH:~/usr/bin/
-# Include git-flow
-source "${0%/*}/git-flow-completion.zsh"
-
-# Run phpbrew
-if [[ -s "~/.phpbrew/bashrc" ]] ; then
-	~/.phpbrew/bashrc # Load phpbrew
-fi
+PATH=/usr/local/sbin:$PATH:~/usr/bin
+# Configure Byobu
+export BYOBU_PREFIX=$(brew --prefix)
 
 # vim: set ft=zsh :
