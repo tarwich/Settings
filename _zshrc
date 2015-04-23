@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-# Set my theme. Muse is one I like because they have icons, git support, and 
+# Set my theme. Muse is one I like because they have icons, git support, and
 # muse seems to work without additional configuration / support.
 export ZSH_THEME="muse"
 # I like to use the vim editor
@@ -32,15 +32,16 @@ if expr "$OSTYPE" : darwin >/dev/null ; then
 		RED="\x1B[31m"
 		RESET="\x1B[0m"
 		
-		for file in $@ ; do 
-			export FILE=$file
-			
-			# If the file can't be found, then search $PWD
-			[[ -e "$PWD/$FILE" ]] && export FILE=$PWD/$FILE
+		for file in $@ ; do
+			# Normalize the path
+			file=$(cd $(dirname $file); pwd)/$(basename $file)
 			# If the file is found, then delete. Otherwise error
-			[[ -e "$FILE" ]] \
-				&& $(/usr/bin/env osascript -e 'tell application "Finder" to delete POSIX file "'$FILE'"' 1>/dev/null) \
-				|| echo -e "${RED}Cannot find the file ${CYAN}$FILE${RESET}"
+			if [[ -e "$file" ]] ; then
+				echo -e "Removing file ${CYAN}${file}${RESET}"
+				/usr/bin/env osascript -e "tell application \"Finder\" to delete POSIX file \"${file}\"" 1>/dev/null
+			else
+				echo -e "${RED}Cannot find the file ${CYAN}${file}${RESET}"
+			fi
 		done
 	}
 fi
@@ -55,5 +56,9 @@ fi
 PATH=/usr/local/sbin:$PATH:~/usr/bin
 # Configure Byobu
 export BYOBU_PREFIX=$(brew --prefix)
+# The next line updates PATH for the Google Cloud SDK.
+. '/Users/tarwich/Downloads/google-cloud-sdk/path.zsh.inc'
+# The next line enables bash completion for gcloud.
+. '/Users/tarwich/Downloads/google-cloud-sdk/completion.zsh.inc'
 
 # vim: set ft=zsh :
