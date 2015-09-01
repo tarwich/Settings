@@ -25,13 +25,15 @@ if expr "$OSTYPE" : darwin >/dev/null ; then
 	# open -a TotalTerminal 2>/dev/null
 	# Setup homebrew
 	export PATH=/usr/local/bin:$PATH
-	
+	# Homebrew uses a GitHub API token
+	export HOMEBREW_GITHUB_API_TOKEN=$(cat ~/.ssh/GITHUB_API_TOKEN)
+
 	# Setup a trash function
 	trash() {
 		CYAN="\x1B[36m"
 		RED="\x1B[31m"
 		RESET="\x1B[0m"
-		
+
 		for file in $@ ; do
 			# Normalize the path
 			file=$(cd $(dirname $file); pwd)/$(basename $file)
