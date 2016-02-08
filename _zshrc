@@ -69,5 +69,7 @@ export BYOBU_PREFIX=$(brew --prefix)
 
 # Support go
 [[ -f /usr/local/opt/libexec/bin/go ]] && export PATH=$PATH:/usr/local/opt/go/libexec/bin
+export GOPATH=$HOME/go
+export PATH=$PATH:$HOME/go/bin
 
 # vim: set ft=zsh :
