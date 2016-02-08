@@ -2,15 +2,20 @@
 
 # Set my theme. Muse is one I like because they have icons, git support, and
 # muse seems to work without additional configuration / support.
-export ZSH_THEME="muse"
+# Themes I like: random, agnoster (colors), bureau (symbols), clean, lukerandall, nanotech, smt (time), sorin (simple/symbols)
+export ZSH_THEME="morin"
 # I like to use the vim editor
 export EDITOR='emacs'
 # Tell zsh to auto-select the first completion when there is only one
 zstyle '*' single-ignored complete
 # Load these plugins when zsh starts (it will start AFTER this config  is processed
-plugins=(brew dircycle gem git)
+plugins=(brew dircycle gem git autoenv thefuck)
 # Tell zsh to show red dots while searching for a completion
 COMPLETION_WAITING_DOTS="true"
+# Make zsh autoupdate, but don't ask for confirmation
+DISABLE_UPDATE_PROMPT=true
+# Set the directory for ZSH customizations
+export ZSH_CUSTOM=$HOME/Settings/zsh
 # Disable autocorrect
 unsetopt correct_all
 export DISABLE_CORRECTION="true"
@@ -48,18 +53,21 @@ if expr "$OSTYPE" : darwin >/dev/null ; then
 	}
 fi
 
-# Alias thefuck if installed
-which thefuck &>/dev/null && . =(thefuck --alias)
-
 # Run RVM init
 if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
 	. "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
 	PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 fi
 
+# Docker ENV
+hash docker-machine 2>/dev/null && . =(docker-machine env default)
+
 # Add my personal bin set
 PATH=/usr/local/sbin:$PATH:~/usr/bin
 # Configure Byobu
 export BYOBU_PREFIX=$(brew --prefix)
+
+# Support go
+[[ -f /usr/local/opt/libexec/bin/go ]] && export PATH=$PATH:/usr/local/opt/go/libexec/bin
 
 # vim: set ft=zsh :
