@@ -1,7 +1,0 @@
-<snippet>
-	<content><![CDATA[
-echo "<pre>".Jackal::call("Console/asciiTable", ${1:\$data})."</pre>";
-]]></content>
-	<tabTrigger>asciiTable</tabTrigger>
-	<scope>source.php</scope>
-</snippet>
