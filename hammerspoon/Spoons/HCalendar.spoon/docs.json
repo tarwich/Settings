@@ -1,0 +1,41 @@
+[
+  {
+    "Constant" : [
+
+    ],
+    "submodules" : [
+
+    ],
+    "Function" : [
+
+    ],
+    "Variable" : [
+
+    ],
+    "stripped_doc" : [
+
+    ],
+    "desc" : "A horizonal calendar inset into the desktop",
+    "Deprecated" : [
+
+    ],
+    "type" : "Module",
+    "Constructor" : [
+
+    ],
+    "items" : [
+
+    ],
+    "Method" : [
+
+    ],
+    "Command" : [
+
+    ],
+    "Field" : [
+
+    ],
+    "doc" : "A horizonal calendar inset into the desktop\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HCalendar.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HCalendar.spoon.zip)",
+    "name" : "HCalendar"
+  }
+]
