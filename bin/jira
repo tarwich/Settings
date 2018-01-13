@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+/Users/tarwich/Documents/Projects/jira-cli/node_modules/.bin/ts-node /Users/tarwich/Documents/Projects/jira-cli/src "$@"
