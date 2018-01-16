@@ -13,3 +13,6 @@ hs.hotkey.bind({'cmd', 'alt'}, 'c', function() spoon.WinWin:moveAndResize('cente
 
 -- Lockscreen
 hs.hotkey.bind({'cmd', 'ctrl', 'shift'}, 'L', 'Lock Screen', function() hs.caffeinate.lockScreen() end)
+
+-- Window Hints
+hs.hotkey.bind({'alt'}, 'tab', 'Window Hints', function() hs.hints.windowHints() end)
