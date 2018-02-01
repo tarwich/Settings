@@ -15,17 +15,15 @@
     "stripped_doc" : [
 
     ],
-    "desc" : "A horizonal calendar inset into the desktop",
     "Deprecated" : [
 
     ],
+    "desc" : "A horizonal calendar inset into the desktop",
     "type" : "Module",
     "Constructor" : [
 
     ],
-    "items" : [
-
-    ],
+    "doc" : "A horizonal calendar inset into the desktop\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HCalendar.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HCalendar.spoon.zip)",
     "Method" : [
 
     ],
@@ -35,7 +33,9 @@
     "Field" : [
 
     ],
-    "doc" : "A horizonal calendar inset into the desktop\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HCalendar.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HCalendar.spoon.zip)",
+    "items" : [
+
+    ],
     "name" : "HCalendar"
   }
 ]

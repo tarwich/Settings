@@ -15,7 +15,7 @@ obj.homepage = "https://github.com/Hammerspoon/Spoons"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
 
 obj.hcalw = 31*24+20
-obj.hcalh = 100
+obj.hcalh = 90
 
 local function updateHcalCanvas()
     local titlestr = os.date("%B %Y")
@@ -64,7 +64,7 @@ function obj:init()
     local cscreen = hs.screen.mainScreen()
     local cres = cscreen:fullFrame()
     obj.canvas = hs.canvas.new({
-        x = 10,
+        x = 0,
         y = cres.h - obj.hcalh,
         w = obj.hcalw,
         h = obj.hcalh,
