@@ -35,12 +35,16 @@ local function updateHcalCanvas()
             obj.canvas[2+i].textColor = {hex="#FF7878"}
             obj.canvas[33+i].fillColor = {hex="#FF7878"}
             obj.canvas[64+i].textColor = {hex="#FF7878"}
-        end
-        if i == math.tointeger(currentday) then
-            obj.canvas[33+i].fillColor = {hex="#00BAFF", alpha=0.8}
-            obj.canvas[96].frame.x = tostring((10+24*(i-1))/obj.hcalw)
         else
+            obj.canvas[2+i].textColor = {hex="#A0A0A0"}
             obj.canvas[33+i].fillColor = {hex="#FFFFFF", alpha=0.8}
+            obj.canvas[64+i].textColor = {hex="#A0A0A0"}
+        end
+
+        if i == math.tointeger(currentday) then
+            obj.canvas[33+i].fillColor = {hex="#007EFF", alpha=0.8}
+            -- Move the highlighter to the current column
+            obj.canvas[96].frame.x = tostring((10+24*(i-1))/obj.hcalw)
         end
         -- hide extra day
         if i > lastdayofcurrentmonth then

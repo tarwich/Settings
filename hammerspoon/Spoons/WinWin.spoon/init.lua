@@ -95,58 +95,83 @@ local function windowStash(window)
     table.insert(obj.history, winstru) -- Insert new item of window history
 end
 
-function obj:moveAndResize(option)
+function obj:moveAndResize(option, adjustSize)
     local cwin = hs.window.focusedWindow()
+    local sizeAdjustment = 0.40
+
     if cwin then
         local cscreen = cwin:screen()
-        local cres = cscreen:fullFrame()
-        local stepw = cres.w/obj.gridparts
-        local steph = cres.h/obj.gridparts
-        local wf = cwin:frame()
+        local screenFrame = cscreen:fullFrame()
+        local stepw = screenFrame.w/obj.gridparts
+        local steph = screenFrame.h/obj.gridparts
+        local windowFrame = cwin:frame()
+    
         if option == "halfleft" then
             windowStash(cwin)
-            cwin:setFrame({x=cres.x, y=cres.y, w=cres.w/2, h=cres.h})
+            cwin:setFrame({x=screenFrame.x, y=screenFrame.y, w=screenFrame.w/2, h=screenFrame.h})
         elseif option == "halfright" then
             windowStash(cwin)
-            cwin:setFrame({x=cres.x+cres.w/2, y=cres.y, w=cres.w/2, h=cres.h})
+            cwin:setFrame({x=screenFrame.x+screenFrame.w/2, y=screenFrame.y, w=screenFrame.w/2, h=screenFrame.h})
         elseif option == "halfup" then
             windowStash(cwin)
-            cwin:setFrame({x=cres.x, y=cres.y, w=cres.w, h=cres.h/2})
+            cwin:setFrame({x=screenFrame.x, y=screenFrame.y, w=screenFrame.w, h=screenFrame.h/2})
         elseif option == "halfdown" then
             windowStash(cwin)
-            cwin:setFrame({x=cres.x, y=cres.y+cres.h/2, w=cres.w, h=cres.h/2})
+            cwin:setFrame({x=screenFrame.x, y=screenFrame.y+screenFrame.h/2, w=screenFrame.w, h=screenFrame.h/2})
         elseif option == "cornerNW" then
             windowStash(cwin)
-            cwin:setFrame({x=cres.x, y=cres.y, w=cres.w/2, h=cres.h/2})
+            cwin:setFrame({x=screenFrame.x, y=screenFrame.y, w=screenFrame.w/2, h=screenFrame.h/2})
         elseif option == "cornerNE" then
             windowStash(cwin)
-            cwin:setFrame({x=cres.x+cres.w/2, y=cres.y, w=cres.w/2, h=cres.h/2})
+            cwin:setFrame({x=screenFrame.x+screenFrame.w/2, y=screenFrame.y, w=screenFrame.w/2, h=screenFrame.h/2})
         elseif option == "cornerSW" then
             windowStash(cwin)
-            cwin:setFrame({x=cres.x, y=cres.y+cres.h/2, w=cres.w/2, h=cres.h/2})
+            cwin:setFrame({x=screenFrame.x, y=screenFrame.y+screenFrame.h/2, w=screenFrame.w/2, h=screenFrame.h/2})
         elseif option == "cornerSE" then
             windowStash(cwin)
-            cwin:setFrame({x=cres.x+cres.w/2, y=cres.y+cres.h/2, w=cres.w/2, h=cres.h/2})
+            cwin:setFrame({x=screenFrame.x+screenFrame.w/2, y=screenFrame.y+screenFrame.h/2, w=screenFrame.w/2, h=screenFrame.h/2})
         elseif option == "fullscreen" then
             windowStash(cwin)
-            cwin:setFrame({x=cres.x, y=cres.y, w=cres.w, h=cres.h})
+            cwin:setFrame({x=screenFrame.x, y=screenFrame.y, w=screenFrame.w, h=screenFrame.h})
         elseif option == "center" then
             windowStash(cwin)
-            cwin:centerOnScreen()
+            if (adjustSize) then
+                local newWidth = math.max(screenFrame.w * 0.45, 1250)
+                local newHeight = screenFrame.h * 0.70
+
+                cwin:setFrame({
+                    x = screenFrame.x + (screenFrame.w / 2) - (newWidth / 2),
+                    y = screenFrame.y + (screenFrame.h / 2) - (newHeight / 2),
+                    w = newWidth,
+                    h = newHeight,
+                })
+            else
+                cwin:setFrame({
+                    x = screenFrame.x + (screenFrame.w / 2) - (windowFrame.w / 2),
+                    y = screenFrame.y + (screenFrame.h / 2) - (windowFrame.h / 2),
+                    w = windowFrame.w,
+                    h = windowFrame.h,
+                })
+            end
         elseif option == "expand" then
-            cwin:setFrame({x=wf.x-stepw, y=wf.y-steph, w=wf.w+(stepw*2), h=wf.h+(steph*2)})
+            cwin:setFrame({x=windowFrame.x-stepw, y=windowFrame.y-steph, w=windowFrame.w+(stepw*2), h=windowFrame.h+(steph*2)})
         elseif option == "shrink" then
-            cwin:setFrame({x=wf.x+stepw, y=wf.y+steph, w=wf.w-(stepw*2), h=wf.h-(steph*2)})
+            cwin:setFrame({x=windowFrame.x+stepw, y=windowFrame.y+steph, w=windowFrame.w-(stepw*2), h=windowFrame.h-(steph*2)})
         elseif option == "left" then
-            cwin:setFrame({x=cres.x, y=wf.y, w=wf.w, h=wf.h})
+            cwin:setFrame({
+                x = screenFrame.x,
+                y = adjustSize and screenFrame.y or windowFrame.y,
+                w = adjustSize and (screenFrame.w * sizeAdjustment) or windowFrame.w,
+                h = adjustSize and (screenFrame.h) or windowFrame.h,
+            })
         elseif option == "right" then
-            cwin:setFrame({x=cres.w-wf.w, y=wf.y, w=wf.w, h=wf.h})
+            cwin:setFrame({x=screenFrame.w-windowFrame.w, y=windowFrame.y, w=windowFrame.w, h=windowFrame.h})
         elseif option == "top" then
-            cwin:setFrame({x=wf.x, y=cres.y, w=wf.w, h=wf.h})
+            cwin:setFrame({x=windowFrame.x, y=screenFrame.y, w=windowFrame.w, h=windowFrame.h})
         elseif option == "bottom" then
-            cwin:setFrame({x=wf.x, y=cres.y + cres.h - wf.h, w=wf.w, h=wf.h})
+            cwin:setFrame({x=windowFrame.x, y=screenFrame.y + screenFrame.h - windowFrame.h, w=windowFrame.w, h=windowFrame.h})
         elseif option == "center" then
-            cwin:setFrame({x=cres.x + (cres.w + wf.w) / 2, y=cres.y + (cres.h + wf.h) / 2, w=wf.w, h=wf.h})
+            cwin:setFrame({x=screenFrame.x + (screenFrame.w + windowFrame.w) / 2, y=screenFrame.y + (screenFrame.h + windowFrame.h) / 2, w=windowFrame.w, h=windowFrame.h})
         end
     else
         hs.alert.show("No focused window!")
@@ -159,20 +184,20 @@ end
 ---
 --- Parameters:
 ---  * direction - A string specifying the direction, valid strings are: `left`, `right`, `up`, `down`, `next`.
-function obj:moveToScreen(direction)
+function obj:moveToScreen(direction, noResize)
     local cwin = hs.window.focusedWindow()
     if cwin then
         local cscreen = cwin:screen()
         if direction == "up" then
-            cwin:moveOneScreenNorth()
+            cwin:moveOneScreenNorth(noResize, true)
         elseif direction == "down" then
-            cwin:moveOneScreenSouth()
+            cwin:moveOneScreenSouth(noResize, true)
         elseif direction == "left" then
-            cwin:moveOneScreenWest()
+            cwin:moveOneScreenWest(noResize, true)
         elseif direction == "right" then
-            cwin:moveOneScreenEast()
+            cwin:moveOneScreenEast(noResize, true)
         elseif direction == "next" then
-            cwin:moveToScreen(cscreen:next())
+            cwin:moveToScreen(cscreen:next(), noResize, true)
         else
             hs.alert.show("Invalid direction!")
         end
