@@ -95,6 +95,11 @@ local function windowStash(window)
     table.insert(obj.history, winstru) -- Insert new item of window history
 end
 
+function obj:pushState()
+    local currentWindow = hs.window.focusedWindow()
+    windowStash(currentWindow)
+end
+
 function obj:moveAndResize(option, adjustSize)
     local cwin = hs.window.focusedWindow()
     local sizeAdjustment = 0.40
@@ -158,14 +163,23 @@ function obj:moveAndResize(option, adjustSize)
         elseif option == "shrink" then
             cwin:setFrame({x=windowFrame.x+stepw, y=windowFrame.y+steph, w=windowFrame.w-(stepw*2), h=windowFrame.h-(steph*2)})
         elseif option == "left" then
+            local newWidth = screenFrame.w * sizeAdjustment
+            
             cwin:setFrame({
                 x = screenFrame.x,
                 y = adjustSize and screenFrame.y or windowFrame.y,
-                w = adjustSize and (screenFrame.w * sizeAdjustment) or windowFrame.w,
-                h = adjustSize and (screenFrame.h) or windowFrame.h,
+                w = adjustSize and newWidth or windowFrame.w,
+                h = adjustSize and screenFrame.h or windowFrame.h,
             })
         elseif option == "right" then
-            cwin:setFrame({x=screenFrame.w-windowFrame.w, y=windowFrame.y, w=windowFrame.w, h=windowFrame.h})
+            local newWidth = screenFrame.w * sizeAdjustment
+
+            cwin:setFrame({
+                x = screenFrame.w - (adjustSize and newWidth or windowFrame.w),
+                y = adjustSize and screenFrame.y or windowFrame.y,
+                w = adjustSize and newWidth or windowFrame.w,
+                h = adjustSize and screenFrame.h or windowFrame.h,
+            })
         elseif option == "top" then
             cwin:setFrame({x=windowFrame.x, y=screenFrame.y, w=windowFrame.w, h=windowFrame.h})
         elseif option == "bottom" then
@@ -204,6 +218,41 @@ function obj:moveToScreen(direction, noResize)
     else
         hs.alert.show("No focused window!")
     end
+end
+
+function obj:getFrame()
+    local currentWindow = hs.window.focusedWindow()
+    local currentScreen = currentWindow:screen()
+    local screenFrame = currentScreen:fullFrame()
+    local windowFrame = currentWindow:frame()
+
+    return currentWindow, windowFrame, screenFrame
+end
+
+function obj:setFrame(newFrame)
+    self:pushState()
+    local currentWindow = hs.window.focusedWindow()
+    currentWindow:setFrame(newFrame)
+end
+
+function obj:resize(newWidth, newHeight)
+    self:pushState()
+    window, frame, screenFrame = self:getFrame()
+    mid = { x = frame.x + (frame.w / 2), y = frame.y + (frame.h / 2) }
+    local newFrame = {
+        x = screenFrame.x + mid.x - (newWidth / 2),
+        y = screenFrame.y + mid.y - (newHeight / 2),
+        w = newWidth,
+        h = newHeight,
+    }
+    window:setFrameWithWorkarounds(newFrame, 0)
+    local size = window:size()
+    window:setFrameWithWorkarounds({
+        x = screenFrame.x + math.min(math.max(mid.x - (size.w / 2), 0), screenFrame.w - size.w),
+        y = screenFrame.y + math.min(math.max(mid.y - (size.h / 2), 0), screenFrame.h - size.h),
+        w = size.w,
+        h = size.h,
+    }, 0)
 end
 
 --- WinWin:undo()
