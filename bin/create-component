@@ -1,0 +1,74 @@
+const commander = require('./commander');
+const { writeFileSync } = require('fs');
+const { resolve } = require('path');
+
+const OPTIONS = commander
+.option('--react', 'Create a react component (this is the default)')
+.option('--preact', 'Create a preact component')
+.option('--out <directory>', 'The destination folder for the output')
+.option('--no-css', 'Disable the creation and linking of a css file')
+.option(
+  '--dry-run',
+  'Simulate the creation of the files, but without actually writing to the disk.'
+)
+.arguments('<name> [...name]')
+.description(
+  `Create a component with the necessary files. You may specify <name> as
+  either a CamelCase name, or a hyphen-case name.`
+)
+;
+
+commander.parse(process.argv);
+
+/**
+ * Main program entry point
+ */
+async function main() {
+  const names = OPTIONS.args.slice(0);
+
+  const jsxFactory = OPTIONS.preact ?
+    '/** @jsx h */' :
+    '/** @jsx createElement */';
+  const customImports = OPTIONS.preact ?
+    'import { Component, h } from "preact";' :
+    'import { createElement, Component, HTMLAttributes } from "react"'
+  ;
+
+  const createFile = OPTIONS.dryRun ?
+    fileName => console.log(`- ${fileName}`) :
+    writeFileSync;
+
+  names.forEach(name => {
+    const nameParts = name.match(/([A-Z]?[a-z0-9_]+)/g);
+    const hyphenCase = nameParts.map(n => n.toLowerCase()).join('-');
+    const camelCase = nameParts.map(n => `${n[0].toUpperCase()}${n.substr(1)}`).join('');
+    const outFile = resolve(OPTIONS.out || '.', hyphenCase);
+    createFile(`${outFile}.tsx`, `${jsxFactory}
+import { observer } from "mobx-${OPTIONS.preact ? 'preact' : 'react'}";
+${customImports}
+import "./${hyphenCase}.scss";
+
+interface IProps extends Pick<HTMLAttributes<HTMLElement>, "className"> {
+}
+
+@observer
+export class ${camelCase} extends Component<IProps> {
+  render() {
+    const { children, className = '' } = this.props;
+
+    return (
+      <div className={\`${camelCase} \${className}\`}>
+        ${camelCase}
+        {children}
+      </div>
+    );
+  }
+}
+`);
+    createFile(`${outFile}.scss`, `.${camelCase} {
+  // CSS goes here
+}`);
+  });
+}
+
+main().catch(console.error);
