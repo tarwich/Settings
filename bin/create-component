@@ -7,7 +7,7 @@ const OPTIONS = commander
 .option('--preact', 'Create a preact component')
 .option('--out <directory>', 'The destination folder for the output')
 .option('--no-css', 'Disable the creation and linking of a css file')
-.option('--no-actions', 'Disable the creation of the actions file')
+.option('--no-store', 'Disable the creation of the store file')
 .option(
   '--dry-run',
   'Simulate the creation of the files, but without actually writing to the disk.'
@@ -73,15 +73,12 @@ export class ${camelCase} extends Component<IProps> {
 }
 `
     );
-    if (OPTIONS.actions) {
-      createFile(`${outFile}-actions.ts`, `
-import { observable } from 'mobx';
-
-export const ${camelCase}Store = observable({
-});
-
-export class ${camelCase}Actions {
+    if (OPTIONS.store) {
+      createFile(`${outFile}-store.ts`, `
+class Store {
 }
+
+export const ${camelCase}Store = new Store();
 `
       );
     }
@@ -89,3 +86,5 @@ export class ${camelCase}Actions {
 }
 
 main().catch(console.error);
+
+// code: language=JavaScript
