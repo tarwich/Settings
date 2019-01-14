@@ -1,6 +1,9 @@
 # Files that git should ignore
 
-# Mac directory settings
+# Metadata
+# -- VS Code settings
+.vscode
+# -- Mac directory settings
 .DS_Store
 
 # Fish makes this file
