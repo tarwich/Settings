@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process');
+const { resolve } = require('path');
+
+async function run(command, args = [], options = {}) {
+  return new Promise((resolve, reject) => {
+    let STDERR = '';
+    let STDOUT = '';
+    const child = spawn(command, args, {...options, ...{
+      stdio: 'inherit',
+    }});
+    // child.stdout.on('data', buffer => STDOUT += buffer.toString('utf-8'));
+    // child.stderr.on('data', buffer => STDERR += buffer.toString('utf-8'));
+    // child.on('exit', () => {
+    //   if (STDERR) reject(STDERR);
+    //   else resolve(STDOUT);
+    // })
+  });
+}
+
+async function main() {
+  const packageJson = require(resolve('./package.json'));
+  const devDependencies = packageJson.devDependencies;
+  const toUpgrade = Object.keys(devDependencies)
+  .filter(key =>
+    /^[0-9\.^~<=>]+$/.test(devDependencies[key])
+  )
+  .map(t => `${t}@latest`);
+
+  return run('npm', ['install', ...toUpgrade]);
+}
+
+main()
+.catch(error => {
+  console.error('ERROR:', error);
+});
