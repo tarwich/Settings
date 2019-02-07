@@ -8,6 +8,7 @@ const OPTIONS = commander
 .option('--out <directory>', 'The destination folder for the output')
 .option('--no-css', 'Disable the creation and linking of a css file')
 .option('--no-store', 'Disable the creation of the store file')
+.option('--ext [js|ts]', 'Set the file extension', 'ts')
 .option(
   '--dry-run',
   'Simulate the creation of the files, but without actually writing to the disk.'
@@ -26,34 +27,36 @@ commander.parse(process.argv);
  */
 async function main() {
   const names = OPTIONS.args.slice(0);
-
-  const jsxFactory = OPTIONS.preact ?
-    '/** @jsx h */' :
-    '/** @jsx createElement */';
-  const customImports = OPTIONS.preact ?
-    'import { Component, h } from "preact";' :
-    'import { createElement, Component, HTMLAttributes } from "react"'
-  ;
+  const ext = OPTIONS.ext.substr(0, 2);
+  const TS = OPTIONS.ext == 'ts';
+  const JS = !TS;
 
   const createFile = OPTIONS.dryRun ?
     fileName => console.log(`- ${fileName}`) :
-    writeFileSync;
+    (file, data) => writeFileSync(file, data.trim() + '\n')
+  ;
 
   names.forEach(name => {
     const nameParts = name.match(/([A-Z]?[a-z0-9_]+)/g);
     const hyphenCase = nameParts.map(n => n.toLowerCase()).join('-');
     const camelCase = nameParts.map(n => `${n[0].toUpperCase()}${n.substr(1)}`).join('');
     const outFile = resolve(OPTIONS.out || '.', hyphenCase);
-    createFile(`${outFile}.tsx`, `${jsxFactory}
-import { observer } from "mobx-${OPTIONS.preact ? 'preact' : 'react'}";
-${customImports}
+
+    const buildReact = () => {
+      return `
+import { observer } from "mobx-react";
+import * as React from "react";
+import { Component } from "react";
+import "./${hyphenCase}-store.${ext}";
 import "./${hyphenCase}.scss";
+${TS ? `
 
 interface IProps extends Pick<HTMLAttributes<HTMLElement>, "className"> {
 }
 
+` : ''}
 @observer
-export class ${camelCase} extends Component<IProps> {
+export class ${camelCase} extends Component${TS ? '<IProps>' : ''} {
   render() {
     const { children, className = '' } = this.props;
 
@@ -65,7 +68,39 @@ export class ${camelCase} extends Component<IProps> {
     );
   }
 }
-`
+      `;
+    };
+
+    const buildPreact = () => `
+/** @jsx h */
+import { observer } from "mobx-react";
+import { Component, h } from "react";
+import "./${hyphenCase}-store.${ext}";
+import "./${hyphenCase}.scss";
+${TS ? `
+
+interface IProps extends Pick<HTMLAttributes<HTMLElement>, "className"> {
+}
+
+` : ''}
+@observer
+export class ${camelCase} extends Component${TS ? '<IProps>' : ''} {
+  render() {
+    const { children, className = '' } = this.props;
+
+    return (
+      <div className={\`${camelCase} \${className}\`}>
+        ${camelCase}
+        {children}
+      </div>
+    );
+  }
+}
+`;
+
+    createFile(
+      `${outFile}.${ext}x`,
+      OPTIONS.preact ? buildPreact() : buildReact()
     );
     createFile(`${outFile}.scss`, `
 .${camelCase} {
@@ -74,7 +109,7 @@ export class ${camelCase} extends Component<IProps> {
 `
     );
     if (OPTIONS.store) {
-      createFile(`${outFile}-store.ts`, `
+      createFile(`${outFile}-store.${ext}`, `
 class Store {
 }
 
