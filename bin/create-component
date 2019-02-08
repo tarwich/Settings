@@ -47,7 +47,7 @@ async function main() {
 import { observer } from "mobx-react";
 import * as React from "react";
 import { Component } from "react";
-import "./${hyphenCase}-store.${ext}";
+import { ${camelCase}Store } from "./${hyphenCase}-store.${ext}";
 import "./${hyphenCase}.scss";
 ${TS ? `
 
@@ -75,7 +75,7 @@ export class ${camelCase} extends Component${TS ? '<IProps>' : ''} {
 /** @jsx h */
 import { observer } from "mobx-react";
 import { Component, h } from "react";
-import "./${hyphenCase}-store.${ext}";
+import { ${camelCase}Store } from "./${hyphenCase}-store.${ext}";
 import "./${hyphenCase}.scss";
 ${TS ? `
 
