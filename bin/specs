@@ -1,74 +1,108 @@
-#!/usr/bin/env python
-import argparse, re, subprocess, sys
+#!/usr/bin/env node
+const Commander = require('./commander');
+const { execSync } = require('child_process');
+const { arch, platform, release } = require('os');
 
-def foo():
-    abc.bar()
+const OPTIONS = Commander
+.description('Get system information for the purpose of bug reporting')
+.option('-a, --applications, --application <application, ...>', 'Get information for the supplied application', t => t.split(','), [])
+.parse(process.argv)
+;
 
-def main():
-    # Create an argument parser for the argv
-    parser = argparse.ArgumentParser(description='Gather system specs for bug reporting')
-    group =  parser.add_mutually_exclusive_group(required=True)
-    # --app argument
-    group.add_argument("--application", "-a", help="Get additional specs for this application (if installed)")
-    # -os argument
-    group.add_argument("--os-only", "-o", action="store_true", help="Only show information about the operating system (exclude the app)")
-    # Parse the CLI arguments
-    args = parser.parse_args()
-    # What to do on each platform
-    platform_mappings = {
-        "darwin": darwin_specs,
-    }
-    # Look up in the dictionary, and run the result
-    if sys.platform in platform_mappings: specs = platform_mappings[sys.platform](args)
-    # Didn't recognize the platform, throw error
-    else: return error('Platform "%s" is not recognized' % sys.platform)
-    lines = [
-        '%(os)s:', 
-        '  arch: %(arch)s',
-        ];
-    if args.application: lines += [
-        '%(application_name)s:',
-        '  version: %(application_version)s',
-        '  architecture: %(application_arch)s',
-    ];
-    print str.join('\n', lines) % specs
-          
-def error(message): print('ERROR: %s' % message)
-    
-def darwin_specs(arguments):
-    # Get the architecture
-    specs = {
-        "os"   : darwin_os_info(),
-        "arch" : subprocess.Popen(["uname", "-m"], stdout=subprocess.PIPE).stdout.read().strip(),
-    }
-    # Get information about the application 
-    if(arguments.application):
-        # Get information about the app
-        stream = subprocess.Popen(["lsappinfo", "info", arguments.application], stdout=subprocess.PIPE).stdout
-        # Process the application information
-        text = stream.read()
-        # Prepare the tag hash
-        tags = {}
-        # Get all the tags from the results
-        for tag in re.findall(r'(\w+)\s*=\s*(".*?"|[^\s]*)', text):
-            tags[str.lower(tag[0])] = str.strip(tag[1], '"')
-        # Make the tags into what we want
-        specs["application_name"] = arguments.application
-        specs["application_version"] = tags["version"]
-        specs["application_arch"] = tags["arch"]
-    return specs
+const applications = OPTIONS.applications.map(app => {
+  return {
+    name: app,
+    version: execSync(`${app} --version`).toString().trim(),
+  };
+});
 
-def darwin_os_info():
-    # Get OS information
-    response = subprocess.Popen("sw_vers", stdout=subprocess.PIPE).stdout
-    # This will hold the operating system information
-    os_info = {}
-    # Process the OS information
-    for line in response:
-        (key, value) = line.split(':')
-        os_info[key] = value.strip()
-    # Build the OS string
-    return "%(ProductName)s %(ProductVersion)s.%(BuildVersion)s" % os_info
-    
+const PLATFORMS = {
+  win32: 'Windows',
+};
 
-main()
+const osPlatform = platform();
+
+console.log(`
+Operating System:
+  ${PLATFORMS[osPlatform] || osPlatform}: ${release()}
+  arch: ${arch()}
+
+Applications:
+${applications.map(app => `  ${app.name}: ${app.version}`).join('\n')}
+`);
+
+// I left this here to help whenever I go back to Mac
+// #!/usr/bin/env python
+// import argparse, re, subprocess, sys
+
+// def foo():
+//     abc.bar()
+
+// def main():
+//     # Create an argument parser for the argv
+//     parser = argparse.ArgumentParser(description='Gather system specs for bug reporting')
+//     group =  parser.add_mutually_exclusive_group(required=True)
+//     # --app argument
+//     group.add_argument("--application", "-a", help="Get additional specs for this application (if installed)")
+//     # -os argument
+//     group.add_argument("--os-only", "-o", action="store_true", help="Only show information about the operating system (exclude the app)")
+//     # Parse the CLI arguments
+//     args = parser.parse_args()
+//     # What to do on each platform
+//     platform_mappings = {
+//         "darwin": darwin_specs,
+//     }
+//     # Look up in the dictionary, and run the result
+//     if sys.platform in platform_mappings: specs = platform_mappings[sys.platform](args)
+//     # Didn't recognize the platform, throw error
+//     else: return error('Platform "%s" is not recognized' % sys.platform)
+//     lines = [
+//         '%(os)s:',
+//         '  arch: %(arch)s',
+//         ];
+//     if args.application: lines += [
+//         '%(application_name)s:',
+//         '  version: %(application_version)s',
+//         '  architecture: %(application_arch)s',
+//     ];
+//     print str.join('\n', lines) % specs
+
+// def error(message): print('ERROR: %s' % message)
+
+// def darwin_specs(arguments):
+//     # Get the architecture
+//     specs = {
+//         "os"   : darwin_os_info(),
+//         "arch" : subprocess.Popen(["uname", "-m"], stdout=subprocess.PIPE).stdout.read().strip(),
+//     }
+//     # Get information about the application
+//     if(arguments.application):
+//         # Get information about the app
+//         stream = subprocess.Popen(["lsappinfo", "info", arguments.application], stdout=subprocess.PIPE).stdout
+//         # Process the application information
+//         text = stream.read()
+//         # Prepare the tag hash
+//         tags = {}
+//         # Get all the tags from the results
+//         for tag in re.findall(r'(\w+)\s*=\s*(".*?"|[^\s]*)', text):
+//             tags[str.lower(tag[0])] = str.strip(tag[1], '"')
+//         # Make the tags into what we want
+//         specs["application_name"] = arguments.application
+//         specs["application_version"] = tags["version"]
+//         specs["application_arch"] = tags["arch"]
+//     return specs
+
+// def darwin_os_info():
+//     # Get OS information
+//     response = subprocess.Popen("sw_vers", stdout=subprocess.PIPE).stdout
+//     # This will hold the operating system information
+//     os_info = {}
+//     # Process the OS information
+//     for line in response:
+//         (key, value) = line.split(':')
+//         os_info[key] = value.strip()
+//     # Build the OS string
+//     return "%(ProductName)s %(ProductVersion)s.%(BuildVersion)s" % os_info
+
+
+// main()
