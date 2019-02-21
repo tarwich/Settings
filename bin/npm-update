@@ -1,23 +1,8 @@
 #!/usr/bin/env node
-
-const { spawn } = require('child_process');
+const { spawnSync } = require('child_process');
 const { resolve } = require('path');
 
-async function run(command, args = [], options = {}) {
-  return new Promise((resolve, reject) => {
-    let STDERR = '';
-    let STDOUT = '';
-    const child = spawn(command, args, {...options, ...{
-      stdio: 'inherit',
-    }});
-    // child.stdout.on('data', buffer => STDOUT += buffer.toString('utf-8'));
-    // child.stderr.on('data', buffer => STDERR += buffer.toString('utf-8'));
-    // child.on('exit', () => {
-    //   if (STDERR) reject(STDERR);
-    //   else resolve(STDOUT);
-    // })
-  });
-}
+const NPM = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
 async function main() {
   const packageJson = require(resolve('./package.json'));
@@ -28,10 +13,12 @@ async function main() {
   )
   .map(t => `${t}@latest`);
 
-  return run('npm', ['install', ...toUpgrade]);
+  const {error} = spawnSync(
+    NPM,
+    ['install', ...toUpgrade],
+    {stdio: 'inherit'}
+  );
+  if (error) throw error;
 }
 
-main()
-.catch(error => {
-  console.error('ERROR:', error);
-});
+main().catch(console.error);
