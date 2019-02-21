@@ -9,13 +9,14 @@ async function main() {
   const devDependencies = packageJson.devDependencies;
   const toUpgrade = Object.keys(devDependencies)
   .filter(key =>
+    // Only include things that are in NPM (exclude github,tar,url)
     /^[0-9\.^~<=>]+$/.test(devDependencies[key])
   )
   .map(t => `${t}@latest`);
 
   const {error} = spawnSync(
     NPM,
-    ['install', ...toUpgrade],
+    ['install', '-DE', ...toUpgrade],
     {stdio: 'inherit'}
   );
   if (error) throw error;
