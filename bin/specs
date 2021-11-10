@@ -1,23 +1,60 @@
 #!/usr/bin/env node
-const Commander = require('./commander');
-const { execSync } = require('child_process');
-const { arch, platform, release } = require('os');
+const Commander = require("./commander");
+const { execSync } = require("child_process");
+const { arch, platform, release } = require("os");
 
-const OPTIONS = Commander
-.description('Get system information for the purpose of bug reporting')
-.option('-a, --applications, --application <application, ...>', 'Get information for the supplied application', t => t.split(','), [])
-.parse(process.argv)
-;
+const OPTIONS = Commander.description(
+  "Get system information for the purpose of bug reporting"
+)
+  .option(
+    "-a, --applications, --application <application, ...>",
+    "Get information for the supplied application",
+    (t) => t.split(","),
+    []
+  )
+  .parse(process.argv);
 
-const applications = OPTIONS.applications.map(app => {
+const applications = OPTIONS.applications.map((app) => {
+  let version = "(Unknown)";
+  let arch = "";
+
+  try {
+    // Attempt to get application version directly
+    version = execSync(`${app} --version`).toString().trim();
+  } catch {
+    if (platform() === "darwin") {
+      // If that fails, try to get it from lsappinfo
+      const matches = execSync(`lsappinfo info ${app}`)
+        ?.toString()
+        ?.split("\n")
+        .slice(1)
+        .join("\n")
+        ?.matchAll(/(.+?)=\s*([^ ]+|"[^"+]")/gs);
+
+      const pairs = [...matches].map((match) => [
+        match[1]?.trim(),
+        match[2]?.replace(/"/g, "").trim(),
+      ]);
+
+      const info = pairs.reduce((acc, [key, value]) => {
+        acc[key.toLowerCase()] = value;
+        return acc;
+      }, {});
+
+      version = info.version;
+      arch = info.arch;
+    }
+  }
+
   return {
     name: app,
-    version: execSync(`${app} --version`).toString().trim(),
+    version: version,
+    arch: arch,
   };
 });
 
 const PLATFORMS = {
-  win32: 'Windows',
+  win32: "Windows",
 };
 
 const osPlatform = platform();
@@ -28,7 +65,11 @@ Operating System:
   arch: ${arch()}
 
 Applications:
-${applications.map(app => `  ${app.name}: ${app.version}`).join('\n')}
+${applications
+  .map(
+    (app) => `  ${app.name}: ${app.version} ${app.arch ? `(${app.arch})` : ""}`
+  )
+  .join("\n")}
 `);
 
 // I left this here to help whenever I go back to Mac
@@ -103,6 +144,5 @@ ${applications.map(app => `  ${app.name}: ${app.version}`).join('\n')}
 //         os_info[key] = value.strip()
 //     # Build the OS string
 //     return "%(ProductName)s %(ProductVersion)s.%(BuildVersion)s" % os_info
-
 
 // main()
